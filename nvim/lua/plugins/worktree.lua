@@ -1,0 +1,25 @@
+return {
+  -- {
+  --   "ThePrimeagen/git-worktree.nvim",
+  --   lazy = false,
+  --   config = function()
+  --     require("git-worktree").setup({})
+  --     require("telescope").load_extension("git_worktree")
+  --   end,
+  -- },
+  -- {
+  --   "folke/which-key.nvim",
+  --   optional = true,
+  --   opts = {
+  --     defaults = {
+  --       { "<leader>g", group = "+worktrees" },
+  --       { "<leader>Gl", "<cmd>lua require('telescope').extensions.git_worktree.git_worktrees()<cr>", desc = "list" },
+  --       {
+  --         "<leader>Gc",
+  --         "<cmd>lua require('telescope').extensions.git_worktree.create_git_worktree()<cr>",
+  --         desc = "create",
+  --       },
+  --     },
+  --   },
+  -- },
+}
