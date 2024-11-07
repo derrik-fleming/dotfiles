@@ -5,11 +5,7 @@ export PATH="$HOME/.local/bin/:$PATH"
 export PATH="$HOME/fvm/default/bin:$PATH"
 export PATH=$(brew --prefix)/bin:$(brew --prefix)/sbin:$PATH
 
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
-# export ANDROID_HOME=~/Library/Android/sdk/
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home/
-# export ANDROID_HOME=/usr/local/share/android-commandlinetools/cmdline-tools/latest/bin
 export ANDROID_HOME=~/Library/Android/sdk
 export ANDROID_NDK_HOME=/usr/local/share/android-commandlinetools/ndk-bundle
 export PATH=$PATH:$ANDROID_HOME/emulator
@@ -21,6 +17,6 @@ export PATH=/users/derrik.fleming/Library/Python/3.9/bin:$PATH
 # Path to your oh-my-zsh installation.
 export ZSH="/Users/derrik.fleming/.oh-my-zsh"
 export EDITOR="/usr/local/bin/nvim"
-
+export STARSHIP_CONFIG=~/.config/starship/config.toml
 
 ZSH_THEME="agnoster"

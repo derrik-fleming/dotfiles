@@ -6,10 +6,13 @@
     nix-darwin.url = "github:LnL7/nix-darwin";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
-
+    home-manager.url = "github:nix-community/home-manager";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    kmonad.url = "git+https://github.com/derrik-fleming/kmonad?rev=a6ca5cad4cb03463eba653b7f455c119f767bbe3&dir=nix&submodules=1"; # Fetch KMonad from GitHub
   };
 
-  outputs = inputs@{ self, nix-darwin, nixpkgs, nix-homebrew }:
+  outputs = inputs@{ self, nix-darwin, nixpkgs, nix-homebrew, kmonad, home-manager }:
+  # outputs = inputs@{ self, nix-darwin, nixpkgs, nix-homebrew }:
   let
     pkgs = import inputs.nixpkgs {
       system = "x86_64-darwin";
@@ -18,92 +21,22 @@
       };
     };
 
-    # gh.kmonad = pkgs.stdenv.mkDerivation {
-    #     name = "kmonad";
-    #     src = pkgs.fetchFromGitHub {
-    #       owner = "kmonad";
-    #       repo = "kmonad";
-    #       fetchSubmodules = true;
-    #       rev = "3da3165c413225d924a55933b723ff8ee00f9231";
-    #       sha256 = "sha256-3yJP1EmS+6DxBvFRe1eaVHmDAfi0KOXqzU+yK/0uFco=";
-    #     };
-    #     nativeBuildInputs = [ pkgs.ruby pkgs.stack pkgs.libiconv-darwin pkgs.libffi pkgs.darwin.xcode_15_4 ];
-    #     dontBuild = true;
-    #     installPhase = ''
-    #       export STACK_ROOT=$PWD/.stack-root
-    #       mkdir -p $STACK_ROOT
-    #       stack build --flag kmonad:kext --extra-include-dirs=c_src/mac/Karabiner-VirtualHIDDevice/dist/include
-    #     '';
-    #   };
-    #
     configuration = { pkgs, config, ... }: {
-      
       nixpkgs.config.allowUnfree = true;
 
       # List packages installed in system profile. To search by name, run:
       # $ nix-env -qaP | grep wget
       environment.systemPackages =
         [
-          # gh.kmonad
-          pkgs.arc-browser
-          pkgs.asdf
-          pkgs.atuin
-          pkgs.awscli2
-          pkgs.bat
-          pkgs.bundletool
-          pkgs.cocoapods
-          pkgs.commitizen
-          pkgs.devcontainer
-          pkgs.devpod
+          kmonad.packages.${pkgs.system}.default
           pkgs.direnv
-          pkgs.docker
-          pkgs.flutter
-          pkgs.fzf
-          pkgs.gimp
-          pkgs.git
-          pkgs.gh
-          pkgs.go
-          pkgs.golangci-lint
-          pkgs.hurl
-          pkgs.kotlin
-          pkgs.lazydocker
-          pkgs.lazygit
-          pkgs.libffi
-          pkgs.libiconv-darwin
-          pkgs.llvm
-          pkgs.lsd
-          pkgs.gnumake
-          pkgs.mise
-          pkgs.mkalias
-          pkgs.neovim
-          pkgs.nodejs
-          pkgs.postman
-          pkgs.pre-commit
-          pkgs.raycast
-          pkgs.ripgrep
-          pkgs.ruby
-          pkgs.spotify
-          pkgs.sqlite
-          pkgs.sshpass
-          pkgs.starship
-          pkgs.stack
-          pkgs.tableplus
-          pkgs.tree
-          pkgs.vscode
-          pkgs.xcbeautify
-          pkgs.xz
-          pkgs.yarn
-          pkgs.zellij
-          pkgs.zoxide
-          pkgs.zsh
-          pkgs.zulu17
+          pkgs.sshs
+          pkgs.vim
         ];
 
       homebrew = {
         enable = true;
         brews = [
-          "gcc"
-          "haskell-stack"
           "mas"
           "koekeishiya/formulae/skhd"
           "koekeishiya/formulae/yabai"
@@ -123,7 +56,6 @@
           "font-hack-nerd-font"
           "homerow"
           "orbstack"
-          "spotify"
           "vysor"
           "wezterm"
           "zed"
@@ -137,7 +69,6 @@
           autoUpdate = true;
           cleanup = "zap";
           upgrade = true;
-        
         };
 
         taps = [
@@ -146,30 +77,11 @@
         ];
       };
 
-
       fonts.packages = [
         (pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
       ];
 
-      system.activationScripts.applications.text = let
-        env = pkgs.buildEnv {
-          name = "system-applications";
-          paths = config.environment.systemPackages;
-          pathsToLink = "/Applications";
-        };
-      in
-        pkgs.lib.mkForce ''
-        # Set up applications.
-        echo "setting up /Applications..." >&2
-        rm -rf /Applications/Nix\ Apps
-        mkdir -p /Applications/Nix\ Apps
-        find ${env}/Applications -maxdepth 1 -type l -exec readlink '{}' + |
-        while read src; do
-          app_name=$(basename "$src")
-          echo "copying $src" >&2
-          ${pkgs.mkalias}/bin/mkalias "$src" "/Applications/Nix Apps/$app_name"
-        done
-            '';
+      users.users."derrik.fleming".home = "/Users/derrik.fleming";
 
       system.defaults = {
         dock.autohide = true;
@@ -180,7 +92,7 @@
           "/Applications/WezTerm.app"
           "/Applications/OrbStack.app"
           "/Applications/1Password.app"
-          "/Applications/Spotify.app"
+          "${pkgs.spotify}/Applications/Spotify.app"
           "/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app"
         ];
         finder.AppleShowAllFiles = true;
@@ -190,15 +102,23 @@
         universalaccess.reduceTransparency = true;
       };
 
-      # launchd.daemons.kmonad = {
-      #   script = ''
-      #     ${gh.kmonad}/bin/kmonad ~/.config/kmonad/config.kbd
-      #   '';
-      #   serviceConfig = {
-      #       KeepAlive = true;
-      #       RunAtLoad = true;
-      #     };
-      # };
+      launchd.daemons.kmonad = {
+        environment = {
+          LANG = "en_US.UTF-8";
+        };
+        serviceConfig = {
+          Label = "com.derrik.fleming.kmonad";
+          KeepAlive = true;
+          ProgramArguments = [
+            "/run/current-system/sw/bin/kmonad"
+            "/Users/derrik.fleming/.config/kmonad/config.kbd"
+          ];
+          RunAtLoad = true;
+          UserName = "root";
+          StandardOutPath = "/var/log/kmonad.log";
+          StandardErrorPath = "/var/log/kmonad.error.log";
+        };
+      };
 
       # Auto upgrade nix package and the daemon service.
       services.nix-daemon.enable = true;
@@ -210,13 +130,14 @@
       # Create /etc/zshrc that loads the nix-darwin environment.
       programs.zsh = {
         enable = true;
-        
+        enableBashCompletion = true;
+        enableFzfHistory = true;
+        enableFzfGit = true;
         # Set ZDOTDIR to ~/.config/zsh
         shellInit = ''
           export ZDOTDIR="$HOME/.config/zsh"
         '';
       };
-      # programs.fish.enable = true;
 
       # Set Git commit hash for darwin-version.
       system.configurationRevision = self.rev or self.dirtyRev or null;
@@ -233,8 +154,15 @@
     # Build darwin flake using:
     # $ darwin-rebuild build --flake .#simple
     darwinConfigurations."work" = nix-darwin.lib.darwinSystem {
+      system = "x86_64-darwin";
+      pkgs = import nixpkgs { system = "x86_64-darwin"; config = { allowUnfree = true; }; };
       modules = [
         configuration
+        home-manager.darwinModules.home-manager {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.users."derrik.fleming" = import ./home.nix;
+        }
         nix-homebrew.darwinModules.nix-homebrew
         {
           nix-homebrew = {

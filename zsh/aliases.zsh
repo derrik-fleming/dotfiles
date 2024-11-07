@@ -1,4 +1,4 @@
-alias nzsh="source ~/.zshrc"
+alias nzsh="source ~/.config/zsh/.zshrc"
 
 alias vim="nvim"
 
