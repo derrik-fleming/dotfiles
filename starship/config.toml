@@ -16,8 +16,8 @@ $nim \
 $rust \
 $scala \
 $python \
-$time\n  \
-[󱞪](fg:iris)
+\n  \
+[󱞪](fg:iris)  
 """
 
 palette = "rose-pine-moon"
