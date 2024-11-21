@@ -7,18 +7,18 @@
   home.homeDirectory = "/Users/derrik.fleming";
   
   home.file = {
-    ".config/atuin".source = ~/repos/personal/dotfiles/atuin;
-    ".config/devcontainers".source = ~/repos/personal/dotfiles/devcontainers;
-    ".config/dygma".source = ~/repos/personal/dotfiles/flutter;
-    ".config/gh-copilot".source = ~/repos/personal/dotfiles/gh-copilot;
-    ".config/kmonad".source = ~/repos/personal/dotfiles/kmonad;
-    ".config/nix-darwin".source = ~/repos/personal/dotfiles/nix-darwin;
-    ".config/nvim".source = ~/repos/personal/dotfiles/nvim;
-    ".config/skhd".source = ~/repos/personal/dotfiles/skhd;
-    ".config/starship".source = ~/repos/personal/dotfiles/starship;
-    ".config/wezterm".source = ~/repos/personal/dotfiles/wezterm;
-    ".config/yabai".source = ~/repos/personal/dotfiles/zellij;
-    ".config/zshrc".source = ~/repos/personal/dotfiles/zsh;
+    ".config/atuin".source = ../atuin;
+    ".config/dygma".source = ../flutter;
+    ".config/gh-copilot".source = ../gh-copilot;
+    ".config/kmonad".source =  ../kmonad;
+    ".config/nix-darwin".source = ../nix-darwin;
+    ".config/nvim".source = ../nvim;
+    ".config/skhd".source = ../skhd;
+    ".config/starship".source = ../starship;
+    ".config/wezterm".source = ../wezterm;
+    ".config/yabai".source = ../yabai;
+    ".config/zellij".source = ../zellij;
+    ".config/zsh".source = ../zsh;
   };
 
   home.packages = [
@@ -48,6 +48,7 @@
     pkgs.mise
     pkgs.mkalias
     pkgs.neovim
+    pkgs.nixfmt
     pkgs.nodejs
     pkgs.postman
     pkgs.pre-commit
@@ -85,6 +86,21 @@
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
+  programs.git = {
+    enable = true;
+    userName = "derrik-fleming";
+    userEmail = "derrik.fleming@spindance.com";
+    aliases = {
+      pu = "push";
+      co = "checkout";
+      cm = "commit";
+    };
+  };
+
+  programs.mise = {
+    enable = true;
+    enableZshIntegration = true;
+  };
 
   home.sessionVariables = {
     ZDOTDIR = "$HOME/.config/zsh";

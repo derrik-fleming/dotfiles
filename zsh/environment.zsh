@@ -5,7 +5,7 @@ export PATH="$HOME/.local/bin/:$PATH"
 export PATH="$HOME/fvm/default/bin:$PATH"
 export PATH=$(brew --prefix)/bin:$(brew --prefix)/sbin:$PATH
 
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home/
+
 export ANDROID_HOME=~/Library/Android/sdk
 export ANDROID_NDK_HOME=/usr/local/share/android-commandlinetools/ndk-bundle
 export PATH=$PATH:$ANDROID_HOME/emulator

@@ -41,6 +41,8 @@
           "koekeishiya/formulae/skhd"
           "koekeishiya/formulae/yabai"
           "leoafarias/fvm/fvm"
+          "radiusmethod/awsd/awsd"
+          "swiftformat"
           "thefuck"
         ];
 
@@ -59,6 +61,7 @@
           "vysor"
           "wezterm"
           "zed"
+          "zen-browser"
         ];
 
         masApps = {
@@ -74,6 +77,7 @@
         taps = [
           "koekeishiya/formulae"
           "leoafarias/fvm"
+          "radiusmethod/awsd"
         ];
       };
 
