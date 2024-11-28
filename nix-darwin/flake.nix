@@ -29,21 +29,30 @@
       environment.systemPackages =
         [
           kmonad.packages.${pkgs.system}.default
+          pkgs.autoconf
+          pkgs.automake
+          pkgs.cmake
           pkgs.direnv
+          pkgs.gcc
+          pkgs.gmp
+          pkgs.libffi
+          pkgs.libtool
+          pkgs.libyaml
+          pkgs.openssl
+          pkgs.pkg-config
+          pkgs.readline
           pkgs.sshs
           pkgs.vim
+          pkgs.zlib
         ];
 
       homebrew = {
         enable = true;
         brews = [
           "mas"
-          "koekeishiya/formulae/skhd"
-          "koekeishiya/formulae/yabai"
           "leoafarias/fvm/fvm"
           "radiusmethod/awsd/awsd"
           "swiftformat"
-          "thefuck"
         ];
 
         casks = [
@@ -57,6 +66,7 @@
           "bazecor"
           "font-hack-nerd-font"
           "homerow"
+          "nikitabobko/tap/aerospace"
           "orbstack"
           "vysor"
           "wezterm"
@@ -75,9 +85,8 @@
         };
 
         taps = [
-          "koekeishiya/formulae"
           "leoafarias/fvm"
-          "radiusmethod/awsd"
+          "nikitabobko/tap"
         ];
       };
 
@@ -89,6 +98,7 @@
 
       system.defaults = {
         dock.autohide = true;
+        dock.expose-group-by-app = true;
         dock.launchanim = false;
         dock.orientation = "right";
         dock.persistent-apps = [
@@ -137,10 +147,6 @@
         enableBashCompletion = true;
         enableFzfHistory = true;
         enableFzfGit = true;
-        # Set ZDOTDIR to ~/.config/zsh
-        shellInit = ''
-          export ZDOTDIR="$HOME/.config/zsh"
-        '';
       };
 
       # Set Git commit hash for darwin-version.

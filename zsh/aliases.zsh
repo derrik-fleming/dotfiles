@@ -1,5 +1,3 @@
-alias nzsh="source ~/.config/zsh/.zshrc"
-
 alias vim="nvim"
 
 alias zj="zellij"
