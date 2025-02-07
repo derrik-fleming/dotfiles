@@ -4,7 +4,7 @@
   programs.git = {
     enable = true;
     userName = "derrik-fleming";
-    userEmail = "derrik.fleming@spindance.com";
+    userEmail = "derrik.fleming@gmail.com";
     aliases = {
       pu = "push";
       co = "checkout";

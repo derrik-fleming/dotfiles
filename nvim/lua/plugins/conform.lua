@@ -53,7 +53,7 @@ return {
         -- },
         dart_cust = {
           command = "dart",
-          args = { "format", "--line-length", "120" },
+          args = { "format", "--line-length", "80" },
           -- stdin = false,
         },
         php = {
