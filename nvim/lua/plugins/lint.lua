@@ -5,7 +5,6 @@ return {
     -- Event to trigger linters
     events = { "BufWritePost", "BufReadPost", "InsertLeave" },
     linters_by_ft = {
-      fish = { "fish" },
       php = { "php" },
 
       -- Use the "*" filetype to run linters on all filetypes.

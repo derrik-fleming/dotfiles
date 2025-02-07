@@ -12,7 +12,6 @@
   };
 
   outputs = inputs@{ self, nix-darwin, nixpkgs, nix-homebrew, kmonad, home-manager }:
-  # outputs = inputs@{ self, nix-darwin, nixpkgs, nix-homebrew }:
   let
     pkgs = import inputs.nixpkgs {
       system = "x86_64-darwin";
@@ -36,6 +35,7 @@
           pkgs.gcc
           pkgs.gmp
           pkgs.libffi
+          pkgs.libssh
           pkgs.libtool
           pkgs.libyaml
           pkgs.openssl
@@ -51,6 +51,7 @@
         brews = [
           "mas"
           "leoafarias/fvm/fvm"
+          "jwt-cli"
           "radiusmethod/awsd/awsd"
           "swiftformat"
         ];
@@ -63,13 +64,14 @@
           "android-platform-tools"
           "android-ndk"
           "android-studio"
+          "arc"
           "bazecor"
           "font-hack-nerd-font"
+          "ghostty"
           "homerow"
           "nikitabobko/tap/aerospace"
           "orbstack"
           "vysor"
-          "wezterm"
           "zed"
           "zen-browser"
         ];
@@ -87,12 +89,9 @@
         taps = [
           "leoafarias/fvm"
           "nikitabobko/tap"
+          "radiusmethod/awsd"
         ];
       };
-
-      fonts.packages = [
-        (pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
-      ];
 
       users.users."derrik.fleming".home = "/Users/derrik.fleming";
 
@@ -102,8 +101,8 @@
         dock.launchanim = false;
         dock.orientation = "right";
         dock.persistent-apps = [
-          "${pkgs.arc-browser}/Applications/Arc.app"
-          "/Applications/WezTerm.app"
+          "/Applications/Arc.app"
+          "/Applications/Ghostty.app"
           "/Applications/OrbStack.app"
           "/Applications/1Password.app"
           "${pkgs.spotify}/Applications/Spotify.app"

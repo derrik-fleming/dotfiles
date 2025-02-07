@@ -7,6 +7,7 @@
     ./modules/lazygit.nix
     ./modules/mise.nix
     ./modules/starship.nix
+    ./modules/wezterm.nix
     ./modules/zellij.nix
     ./modules/zoxide.nix
     ./modules/zsh.nix
@@ -20,21 +21,24 @@
     ".config/aerospace".source = ../aerospace;
     ".config/dygma".source = ../flutter;
     ".config/gh-copilot".source = ../gh-copilot;
+    ".config/ghostty".source = ../ghostty;
     ".config/kmonad".source =  ../kmonad;
     ".config/mise/nodejs".source = ../mise/nodejs;
     ".config/mise/python".source = ../mise/python;
     ".config/mise/ruby".source = ../mise/ruby;
     ".config/nix-darwin".source = ../nix-darwin;
-    ".config/nvim".source = ../nvim;
+    ".config/nvim/init.lua".source = ../nvim/init.lua;
+    ".config/nvim/lua".source = ../nvim/lua;
     ".config/zsh".source = ../zsh;
   };
 
   home.packages = [
-    pkgs.arc-browser
+    pkgs.act
     pkgs.awscli2
     pkgs.bat
     pkgs.bundletool
     pkgs.commitizen
+    pkgs.deno
     pkgs.devcontainer
     pkgs.devpod
     pkgs.docker
@@ -44,10 +48,12 @@
     pkgs.gh
     pkgs.golangci-lint
     pkgs.hurl
+    pkgs.jetbrains-mono
     pkgs.kotlin
     pkgs.lazydocker
     pkgs.lsd
     pkgs.mkalias
+    pkgs.monaspace
     pkgs.neovim
     pkgs.nixfmt
     pkgs.postman
@@ -65,12 +71,15 @@
     pkgs.xz
     pkgs.yarn
     pkgs.oh-my-zsh
+    pkgs.wezterm
     pkgs.zsh-autocomplete
     pkgs.zsh-autosuggestions
     pkgs.zsh-completions
     pkgs.zsh-syntax-highlighting
     pkgs.zulu17
   ];
+
+  fonts.fontconfig.enable = true;
 
   # This value determines the Home Manager release that your
   # configuration is compatible with. This helps avoid breakage
