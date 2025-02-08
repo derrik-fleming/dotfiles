@@ -1,8 +1,8 @@
-{ config, ... }:
+{ config, lib, pkgs, ... }:
 
 {
-  programs.starship = {
+  programs.thefuck = {
     enable = true;
     enableZshIntegration = true;
-  }; 
+  };
 }

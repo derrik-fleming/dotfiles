@@ -8,43 +8,21 @@
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    kmonad.url = "git+https://github.com/kmonad/kmonad?dir=nix&submodules=1";
-    kmonad.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = inputs@{ self, nix-darwin, nixpkgs, nix-homebrew, kmonad, home-manager }:
+  outputs = inputs@{ self, nix-darwin, nixpkgs, nix-homebrew, home-manager }:
   let
     pkgs = import inputs.nixpkgs {
       system = "x86_64-darwin";
-      config = {
-        allowUnfree = true;  # Allow unfree packages here
-      };
     };
 
     configuration = { pkgs, config, ... }: {
-      nixpkgs.config.allowUnfree = true;
-
-      # List packages installed in system profile. To search by name, run:
-      # $ nix-env -qaP | grep wget
       environment.systemPackages =
         [
-          kmonad.packages.${pkgs.system}.default
-          pkgs.autoconf
-          pkgs.automake
-          pkgs.cmake
           pkgs.direnv
-          pkgs.gcc
-          pkgs.gmp
-          pkgs.libffi
-          pkgs.libssh
-          pkgs.libtool
-          pkgs.libyaml
           pkgs.openssl
           pkgs.pkg-config
-          pkgs.readline
-          pkgs.sshs
           pkgs.vim
-          pkgs.zlib
         ];
 
       homebrew = {
@@ -53,6 +31,7 @@
           "mas"
           "leoafarias/fvm/fvm"
           "jwt-cli"
+          "kanata"
           "radiusmethod/awsd/awsd"
           "swiftformat"
         ];
@@ -63,18 +42,14 @@
           "android-commandlinetools"
           "android-ndk"
           "android-platform-tools"
-          "android-ndk"
           "android-studio"
           "arc"
           "bazecor"
           "font-hack-nerd-font"
           "ghostty"
           "homerow"
-          "nikitabobko/tap/aerospace"
           "orbstack"
           "temurin"
-          "vysor"
-          "zed"
           "zen-browser"
         ];
 
@@ -99,11 +74,11 @@
 
       system.defaults = {
         dock.autohide = true;
-        dock.expose-group-by-app = true;
+        dock.expose-group-apps = true;
         dock.launchanim = false;
         dock.orientation = "right";
         dock.persistent-apps = [
-          "/Applications/Arc.app"
+          "/Applications/Zen Browser.app"
           "/Applications/Ghostty.app"
           "/Applications/OrbStack.app"
           "/Applications/1Password.app"
@@ -117,80 +92,76 @@
         universalaccess.reduceTransparency = true;
       };
 
-      launchd.daemons.kmonad = {
+      launchd.daemons.karabiner_virtual_hid_device = {
         environment = {
           LANG = "en_US.UTF-8";
         };
         serviceConfig = {
-          Label = "com.derrik.fleming.kmonad";
+          Label = "com.derrik.fleming.karabiner-virtual-hid-device";
           KeepAlive = true;
           ProgramArguments = [
-            "/run/current-system/sw/bin/kmonad"
-            "/Users/derrik.fleming/.config/kmonad/config.kbd"
+            "/Library/Application Support/org.pqrs/Karabiner-DriverKit-VirtualHIDDevice/Applications/Karabiner-VirtualHIDDevice-Daemon.app/Contents/MacOS/Karabiner-VirtualHIDDevice-Daemon"
           ];
           RunAtLoad = true;
           UserName = "root";
-          StandardOutPath = "/var/log/kmonad.log";
-          StandardErrorPath = "/var/log/kmonad.error.log";
+          StandardOutPath = "/var/log/karabiner-virtual-hid-device.log";
+          StandardErrorPath = "/var/log/karabiner-virtual-hid-device.error.log";
         };
       };
 
-      # Auto upgrade nix package and the daemon service.
-      services.nix-daemon.enable = true;
-      # nix.package = pkgs.nix;
-
-      # Necessary for using flakes on this system.
-      nix.settings.experimental-features = "nix-command flakes";
-
-      # Create /etc/zshrc that loads the nix-darwin environment.
-      programs.zsh = {
-        enable = true;
-        enableBashCompletion = true;
-        enableFzfHistory = true;
-        enableFzfGit = true;
+      launchd.daemons.kanata = {
+        environment = {
+          LANG = "en_US.UTF-8";
+        };
+        serviceConfig = {
+          Label = "com.derrik.fleming.kanata";
+          KeepAlive = true;
+          ProgramArguments = [
+            "/usr/local/bin/kanata"
+             "-c"
+            "/Users/derrik.fleming/.config/kanata/config.kbd"
+          ];
+          RunAtLoad = true;
+          UserName = "root";
+          StandardOutPath = "/var/log/kanata.log";
+          StandardErrorPath = "/var/log/kanata.error.log";
+        };
       };
 
-      # Set Git commit hash for darwin-version.
+      nix.enable = true;
+      nix.settings.experimental-features = "nix-command flakes";
+
       system.configurationRevision = self.rev or self.dirtyRev or null;
-
-      # Used for backwards compatibility, please read the changelog before changing.
-      # $ darwin-rebuild changelog
       system.stateVersion = 5;
-
-      # The platform the configuration will be used on.
       nixpkgs.hostPlatform = "x86_64-darwin";
     };
   in
   {
-    # Build darwin flake using:
-    # $ darwin-rebuild build --flake .#simple
     darwinConfigurations."work" = nix-darwin.lib.darwinSystem {
       system = "x86_64-darwin";
-      pkgs = import nixpkgs { system = "x86_64-darwin"; config = { allowUnfree = true; }; };
+      pkgs = import nixpkgs { 
+          system = "x86_64-darwin";
+          config = {
+            allowUnfree = true;
+          };
+        };
       modules = [
         configuration
         home-manager.darwinModules.home-manager {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.users."derrik.fleming" = import ./home.nix;
+          home-manager.users."derrik.fleming" = import ../home-manager/home.nix;
         }
         nix-homebrew.darwinModules.nix-homebrew
         {
           nix-homebrew = {
-            # Install Homebrew under the default prefix
             enable = true;
-
-            # User owning the Homebrew prefix
             user = "derrik.fleming";
-
-            # Automatically migrate existing Homebrew installations
             autoMigrate = true;
           };
         }
       ];
     };
-
-    # Expose the package set, including overlays, for convenience.
     darwinPackages = self.darwinConfigurations."work".pkgs;
   };
 }
