@@ -8,7 +8,8 @@
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    kmonad.url = "git+https://github.com/derrik-fleming/kmonad?rev=a6ca5cad4cb03463eba653b7f455c119f767bbe3&dir=nix&submodules=1"; # Fetch KMonad from GitHub
+    kmonad.url = "git+https://github.com/kmonad/kmonad?dir=nix&submodules=1";
+    kmonad.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs@{ self, nix-darwin, nixpkgs, nix-homebrew, kmonad, home-manager }:
@@ -71,6 +72,7 @@
           "homerow"
           "nikitabobko/tap/aerospace"
           "orbstack"
+          "temurin"
           "vysor"
           "zed"
           "zen-browser"
