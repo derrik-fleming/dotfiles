@@ -1,13 +1,30 @@
-Host github.com
-  AddKeysToAgent yes
+# 1Password SSH Agent integration
 {{- if eq .chezmoi.os "darwin" }}
-  UseKeychain yes
+Host *
+    IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
 {{- end }}
-  IdentityFile ~/.ssh/id_ed25519
 
-Host dev.azure.com
-  AddKeysToAgent yes
+# Default settings for all hosts
+Host *
+    AddKeysToAgent yes
 {{- if eq .chezmoi.os "darwin" }}
-  UseKeychain yes
+    UseKeychain yes
 {{- end }}
-  IdentityFile ~/.ssh/id_rsa
+    ServerAliveInterval 60
+    ServerAliveCountMax 10
+
+# GitHub
+Host github.com
+    HostName github.com
+    User git
+    PreferredAuthentications publickey
+    # Fallback to local key if 1Password SSH Agent not available
+    IdentityFile ~/.ssh/id_ed25519
+
+# Azure DevOps
+Host dev.azure.com
+    HostName dev.azure.com
+    User git
+    PreferredAuthentications publickey
+    # Fallback to local key if 1Password SSH Agent not available
+    IdentityFile ~/.ssh/id_rsa

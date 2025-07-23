@@ -1,0 +1,5 @@
+# GitHub-specific signing configuration
+{{- if eq .chezmoi.os "darwin" }}
+[user]
+	signingkey = {{ onepasswordRead "op://Private/id_ed25519/public key" }}
+{{- end }}

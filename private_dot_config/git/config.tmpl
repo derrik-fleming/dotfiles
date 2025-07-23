@@ -33,3 +33,29 @@
 [user]
 	email = "{{ .work_email }}"
 	name = "{{ .name }}"
+
+{{- if eq .chezmoi.os "darwin" }}
+# Default GPG/SSH signing configuration
+[gpg]
+	format = ssh
+
+[gpg "ssh"]
+	program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+
+[commit]
+	gpgsign = true
+
+# GitHub repositories - use Ed25519 key
+[includeIf "hasconfig:remote.*.url:git@github.com:*/**"]
+	path = ~/.config/git/config-github
+
+[includeIf "hasconfig:remote.*.url:https://github.com/**"]
+	path = ~/.config/git/config-github
+
+# Azure DevOps repositories - use RSA key
+[includeIf "hasconfig:remote.*.url:git@ssh.dev.azure.com:*/**"]
+	path = ~/.config/git/config-azure
+
+[includeIf "hasconfig:remote.*.url:https://dev.azure.com/**"]
+	path = ~/.config/git/config-azure
+{{- end }}

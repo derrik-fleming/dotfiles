@@ -1,0 +1,8 @@
+{{- if eq .chezmoi.os "darwin" -}}
+# 1Password SSH Agent Configuration
+# Configure to use SSH keys from Private vault only
+
+[[ssh-keys]]
+vault = "Private"
+
+{{- end -}}

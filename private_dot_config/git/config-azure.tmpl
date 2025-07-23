@@ -1,0 +1,5 @@
+# Azure DevOps-specific signing configuration
+{{- if eq .chezmoi.os "darwin" }}
+[user]
+	signingkey = {{ onepasswordRead "op://Private/id_rsa/public key" }}
+{{- end }}
