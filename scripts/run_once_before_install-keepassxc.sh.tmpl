@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# Install KeePassXC if not already installed using 1Password CLI for sudo password
+# This runs before other chezmoi operations
+
+if ! brew list --cask keepassxc &>/dev/null; then
+    echo "📦 Installing KeePassXC password manager..."
+    
+    # Get sudo password from 1Password
+    if command -v op &> /dev/null; then
+        echo "🔐 Getting sudo password from 1Password..."
+        SUDO_PASS=$(op read "op://Private/gentex-login/password" 2>/dev/null)
+        
+        if [ -n "$SUDO_PASS" ]; then
+            echo "✅ Retrieved password from 1Password"
+            echo "$SUDO_PASS" | sudo -S brew install --cask keepassxc
+        else
+            echo "❌ Could not retrieve password from 1Password"
+            echo "Falling back to interactive sudo..."
+            brew install --cask keepassxc
+        fi
+    else
+        echo "⚠️  1Password CLI not found, using interactive sudo..."
+        brew install --cask keepassxc
+    fi
+    
+    if [ $? -eq 0 ]; then
+        echo "✅ KeePassXC installed successfully"
+        echo "💡 CLI is available as: keepassxc-cli"
+    else
+        echo "❌ KeePassXC installation failed"
+        echo "You can install manually: brew install --cask keepassxc"
+    fi
+else
+    echo "✅ KeePassXC already installed"
+fi
