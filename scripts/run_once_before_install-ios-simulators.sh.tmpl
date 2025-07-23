@@ -1,0 +1,94 @@
+#!/bin/bash
+
+# Install Latest iOS Simulator Runtime for Flutter Development
+# This script downloads and installs the most recent iOS simulator runtime
+
+echo "🔧 Installing latest iOS Simulator Runtime..."
+
+# Check if Xcode is installed
+if ! command -v xcodebuild &> /dev/null; then
+    echo "❌ Xcode not found. Please install Xcode first."
+    exit 1
+fi
+
+# Accept Xcode license if not already accepted
+sudo xcodebuild -license accept 2>/dev/null || true
+
+# Get the latest iOS simulator SDK version
+LATEST_IOS_SDK=$(xcodebuild -showsdks | grep "Simulator - iOS" | tail -1 | sed 's/.*-sdk //')
+
+if [ -z "$LATEST_IOS_SDK" ]; then
+    echo "❌ Could not determine latest iOS simulator SDK"
+    exit 1
+fi
+
+echo "📥 Downloading and installing iOS simulator runtime for $LATEST_IOS_SDK..."
+
+# Download the iOS platform (includes simulator runtime)
+echo "Downloading iOS platform..."
+if xcodebuild -downloadPlatform iOS; then
+    echo "✅ iOS platform download completed"
+else
+    echo "⚠️  Download may have failed or was already complete"
+fi
+
+# Try alternative method if first one doesn't work
+echo "Ensuring simulator runtime is available..."
+xcodebuild -runFirstLaunch
+
+# Install iOS simulator if not already present
+if ! xcrun simctl list runtimes | grep -q "iOS.*com.apple.CoreSimulator.SimRuntime.iOS"; then
+    echo "📱 Installing iOS simulator runtime..."
+    # Force install using xcode-select if needed
+    sudo xcode-select --install 2>/dev/null || true
+    
+    # Try to install simulators via Xcode Components
+    echo "Installing via Xcode components..."
+    xcodebuild -downloadAllPlatforms
+fi
+
+# Verify installation
+echo "✅ Checking installed simulator runtimes..."
+xcrun simctl list runtimes
+
+# Ensure we have good Flutter development simulators
+echo "📱 Provisioning iOS simulators for Flutter development..."
+
+# Get the installed iOS runtime identifier
+IOS_RUNTIME=$(xcrun simctl list runtimes | grep "iOS.*com.apple.CoreSimulator.SimRuntime.iOS" | head -1 | sed 's/.*(\(.*\))/\1/')
+
+if [ -n "$IOS_RUNTIME" ]; then
+    echo "Using runtime: $IOS_RUNTIME"
+    
+    # Check if we already have essential simulators, if not create them
+    if ! xcrun simctl list devices | grep -q "iPhone 16 Pro"; then
+        echo "Creating iPhone 16 Pro simulator..."
+        xcrun simctl create "iPhone 16 Pro" "com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro" "$IOS_RUNTIME"
+    fi
+    
+    if ! xcrun simctl list devices | grep -q "iPhone SE"; then
+        echo "Creating iPhone SE (3rd generation) simulator..."
+        xcrun simctl create "iPhone SE (3rd generation)" "com.apple.CoreSimulator.SimDeviceType.iPhone-SE-3rd-generation" "$IOS_RUNTIME"
+    fi
+    
+    if ! xcrun simctl list devices | grep -q "iPad Pro"; then
+        echo "Creating iPad Pro simulator..."
+        xcrun simctl create "iPad Pro 11-inch (M4)" "com.apple.CoreSimulator.SimDeviceType.iPad-Pro-11-inch-M4" "$IOS_RUNTIME"
+    fi
+    
+    echo "✅ Available simulators:"
+    xcrun simctl list devices | grep -E "(iPhone|iPad).*\(Shutdown\)"
+else
+    echo "⚠️  Could not find iOS runtime identifier"
+fi
+
+
+echo "🎉 iOS Simulator runtime and device provisioning complete!"
+echo ""
+echo "💡 Quick commands:"
+echo "  • List simulators: xcrun simctl list devices"
+echo "  • Boot simulator: xcrun simctl boot <device-id>"
+echo "  • Flutter devices: flutter devices"
+echo "  • Run Flutter app: flutter run"
+echo ""
+echo "If issues persist, try running: sudo xcode-select --reset"
