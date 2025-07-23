@@ -1,7 +1,6 @@
 {{- if eq .chezmoi.os "darwin" -}}
 # Taps
-tap "homebrew/bundle"
-tap "homebrew/services"
+# homebrew/bundle and homebrew/services are deprecated and no longer needed
 tap "nikitabobko/tap"  # AeroSpace
 tap "leoafarias/fvm"   # Flutter Version Manager
 tap "dagger/tap"       # Dagger
@@ -36,17 +35,15 @@ brew "deno"
 brew "yarn"
 brew "golangci-lint"
 brew "kotlin"
-brew "awscli2"
+brew "awscli"
 
 # Container and deployment tools
 brew "docker"
 brew "lazydocker"
 brew "act"             # GitHub Actions locally
-brew "devpod"
 brew "dagger"          # CI/CD pipelines
 
 # Mobile development
-brew "flutter"
 brew "leoafarias/fvm/fvm"  # Flutter Version Manager
 brew "bundletool"      # Android App Bundle tool
 brew "xcbeautify"      # Xcode build formatter
@@ -61,7 +58,6 @@ brew "mas"             # Mac App Store CLI
 brew "jwt-cli"         # JWT debugging
 brew "xcode-build-server"
 brew "xz"              # Compression
-brew "mkalias"         # Create aliases
 brew "commitizen"      # Conventional commits
 
 # Nix (if using)

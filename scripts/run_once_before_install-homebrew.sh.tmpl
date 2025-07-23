@@ -1,0 +1,54 @@
+#!/bin/bash
+{{- if eq .chezmoi.os "darwin" }}
+
+set -euo pipefail
+
+log_info() {
+    echo "[INFO] $1" >&2
+}
+
+log_warning() {
+    echo "[WARNING] $1" >&2
+}
+
+log_error() {
+    echo "[ERROR] $1" >&2
+}
+
+# Check if Homebrew is already installed
+if command -v brew >/dev/null 2>&1; then
+    log_info "Homebrew is already installed"
+    brew --version
+else
+    log_info "Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    
+    # Add brew to PATH for this session
+    {{- $brew_prefix := "/opt/homebrew" -}}
+    {{- if eq .chezmoi.arch "amd64" -}}
+    {{- $brew_prefix = "/usr/local" -}}
+    {{- end }}
+    export PATH="{{ $brew_prefix }}/bin:$PATH"
+    
+    if command -v brew >/dev/null 2>&1; then
+        log_info "Homebrew installed successfully"
+    else
+        log_error "Homebrew installation failed"
+        exit 1
+    fi
+fi
+
+# Install packages from Brewfile if it exists
+BREWFILE_PATH="$HOME/.config/homebrew/Brewfile"
+if [[ -f "$BREWFILE_PATH" ]]; then
+    log_info "Installing packages from Brewfile..."
+    if brew bundle install --file="$BREWFILE_PATH"; then
+        log_info "Brewfile packages installed successfully"
+    else
+        log_warning "Some packages from Brewfile failed to install"
+    fi
+else
+    log_warning "Brewfile not found at $BREWFILE_PATH"
+fi
+
+{{- end -}}
