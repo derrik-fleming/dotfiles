@@ -32,7 +32,7 @@ unsetopt EXTENDED_HISTORY
 {{- $brew_prefix := "/opt/homebrew" -}}
 {{- if eq .chezmoi.arch "amd64" -}}
 {{- $brew_prefix = "/usr/local" -}}
-{{- end -}}
+{{- end }}
 
 if [[ $options[zle] = on ]]; then
   source <({{ $brew_prefix }}/bin/fzf --zsh)
