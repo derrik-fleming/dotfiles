@@ -1,0 +1,40 @@
+layout {
+  pane_template name="statusline" {
+    plugin location="https://github.com/dj95/zjstatus/releases/latest/download/zjstatus.wasm" {
+
+      hide_frame_for_single_pane "false"
+
+      format_left  "{mode}#[fg=#9ccfd8,bg=#44415a,bold] #[fg=#ea9a97,bg=#44415a] #[fg=#ea9a97,bg=#44415a]{session} #[fg=#44415a,bg=bg] #[fg=#e0def4,bg=fg]󰓩  {tabs}"
+      format_right "#[fg=#44415a,bg=bg]#[fg=#ea9a97,bg=#44415a] {swap_layout} #[fg=#ea9a97,bg=#44415a]{datetime}"
+      format_space "#[bg=fg]"
+
+      datetime          "#[fg=#393552,bg=#ea9a97]{format}"
+      datetime_format   "  %H:%M "
+      datetime_timezone "America/Detroit"
+
+      mode_normal "#[fg=#393552,bg=#ea9a97,bold] NORMAL #[fg=#ea9a97,bg=#44415a]"
+      mode_locked "#[fg=#393552,bg=#eb6f92,bold] LOCKED #[fg=#eb6f92,bg=#44415a]"
+      mode_resize "#[fg=#393552,bg=#f6c177,bold] RESIZE #[fg=#f6c177,bg=#44415a]"
+      mode_pane "#[fg=#393552,bg=#c4a7e7,bold] PANE #[fg=#c4a7e7,bg=#44415a]"
+      mode_tab "#[fg=#393552,bg=#3e8fb0,bold] TAB #[fg=#3e8fb0,bg=#44415a]"
+      mode_scroll "#[fg=#393552,bg=#95b1ac,bold] SCROLL #[fg=#95b1ac,bg=#44415a]"
+      mode_enter_search "#[fg=#393552,bg=#e0def4,bold] ENTER_SEARCH #[fg=#e0def4,bg=#44415a]"
+      mode_search "#[fg=#393552,bg=#9ccfd8,bold] SEARCH #[fg=#9ccfd8,bg=#44415a]"
+      mode_rename_tab "#[fg=#393552,bg=#c4a7e7,bold] RENAME_TAB #[fg=#c4a7e7,bg=#44415a]"
+      mode_rename_pane "#[fg=#393552,bg=#3e8fb0,bold] RENAME_PANE #[fg=#3e8fb0,bg=#44415a]"
+      mode_session "#[fg=#393552,bg=#9ccfd8,bold] SESSION #[fg=#9ccfd8,bg=#44415a]"
+      mode_move "#[fg=#393552,bg=#ea9a97,bold] MOVE #[fg=#ea9a97,bg=#44415a]"
+      mode_prompt "#[fg=#393552,bg=#f6c177,bold] PROMPT #[fg=#f6c177,bg=#44415a]"
+      mode_tmux "#[fg=#393552,bg=#eb6f92,bold] TMUX #[fg=#eb6f92,bg=#44415a]"
+
+      tab_normal  "#[fg=#e0def4,bg=fg] [{index}] {name}"
+      tab_active  "#[fg=#3e8fb0,bg=fg,bold,italic] [{index}] {name}"
+    }
+  }
+
+  default_tab_template {
+    children
+    statusline size=1
+  }
+}
+

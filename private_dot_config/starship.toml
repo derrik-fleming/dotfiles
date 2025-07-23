@@ -1,0 +1,84 @@
+format = "$username $directory $git_branch $git_status $fill $aws $golang $java $nodejs $rust $python \n  [󱞪](fg:iris)  "
+palette = "rose-pine-moon"
+
+[aws]
+format = "[](fg:overlay)[🅰 $profile $region]($style)[](fg:overlay) "
+style = "bg:overlay fg:foam"
+
+[directory]
+format = "[](fg:overlay)[ $path ]($style)[](fg:overlay)"
+style = "bg:overlay fg:pine"
+truncation_length = 3
+truncation_symbol = "…/"
+
+[directory.substitutions]
+Documents = "󰈙"
+Downloads = " "
+Music = " "
+Pictures = " "
+
+[fill]
+style = "fg:overlay"
+symbol = " "
+
+[git_branch]
+format = "[](fg:overlay)[ $symbol $branch ]($style)[](fg:overlay)"
+style = "bg:overlay fg:foam"
+symbol = ""
+
+[git_status]
+disabled = true
+style = "bg:overlay fg:love"
+
+[golang]
+disabled = false
+format = "[](fg:overlay)[$symbol$version]($style)[](fg:overlay) "
+style = "bg:overlay fg:pine"
+symbol = " "
+
+[java]
+disabled = false
+format = "[](fg:overlay)[$symbol$version]($style)[](fg:overlay) "
+style = "bg:overlay fg:pine"
+symbol = " "
+
+[nodejs]
+disabled = false
+format = "[](fg:overlay)[$symbol$version]($style)[](fg:overlay) "
+style = "bg:overlay fg:pine"
+symbol = "󰎙 "
+
+[palettes.rose-pine-moon]
+foam = "#9ccfd8"
+gold = "#f6c177"
+iris = "#c4a7e7"
+love = "#eb6f92"
+overlay = "#393552"
+pine = "#3e8fb0"
+rose = "#ea9a97"
+
+[python]
+disabled = false
+format = "[](fg:overlay)[$symbol$version]($style)[](fg:overlay) "
+style = "bg:overlay fg:pine"
+symbol = " "
+
+[rust]
+disabled = false
+format = "[](fg:overlay)[$symbol$version]($style)[](fg:overlay) "
+style = "bg:overlay fg:pine"
+symbol = ""
+
+[time]
+disabled = false
+format = "[](fg:overlay)[ $time 󰴈 ]($style)[](fg:overlay)"
+style = "bg:overlay fg:rose"
+time_format = "%I:%M%P"
+use_12hr = true
+
+[username]
+disabled = false
+format = "[](fg:overlay)[ 󰧱 $user ]($style)[](fg:overlay)"
+show_always = true
+style_root = "bg:overlay fg:iris"
+style_user = "bg:overlay fg:iris"

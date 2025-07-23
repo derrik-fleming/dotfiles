@@ -1,0 +1,65 @@
+customCommands:
+- command: 'git commit --message ''{{.Form.Type}}{{ if .Form.Scope }}({{ .Form.Scope
+    }}){{ end }}{{.Form.Breaking}}: {{.Form.Message}}'''
+  context: files
+  description: Create a new conventional commit
+  key: C
+  loadingText: Creating conventional commit...
+  prompts:
+  - key: Type
+    options:
+    - description: A bug fix. Correlates with PATCH in SemVer
+      name: fix
+      value: fix
+    - description: A new feature. Correlates with MINOR in SemVer
+      name: feat
+      value: feat
+    - description: Documentation only changes
+      name: docs
+      value: docs
+    - description: Changes that do not affect the meaning of the code
+      name: style
+      value: style
+    - description: A code change that neither fixes a bug nor adds a feature
+      name: refactor
+      value: refactor
+    - description: A code change that improves performance
+      name: perf
+      value: perf
+    - description: Adding missing tests or correcting existing tests
+      name: test
+      value: test
+    - description: Changes that affect the build system or external dependencies
+      name: build
+      value: build
+    - description: Changes to CI configuration files and scripts
+      name: ci
+      value: ci
+    - description: Other changes that don't modify src or test files
+      name: chore
+      value: chore
+    - description: Reverts a previous commit
+      name: revert
+      value: revert
+    title: Select the type of change you are committing
+    type: menu
+  - initialValue: ''
+    key: Scope
+    title: What is the scope of this change? (optional)
+    type: input
+  - initialValue: ''
+    key: Message
+    title: Write a short and imperative summary of the code changes
+    type: input
+  - key: Breaking
+    options:
+    - name: 'no'
+      value: ''
+    - name: 'yes'
+      value: '!'
+    title: Is this a BREAKING CHANGE? Correlates with MAJOR in SemVer
+    type: menu
+  - body: Are you sure you want to commit?
+    key: Confirm
+    title: Commit
+    type: confirm

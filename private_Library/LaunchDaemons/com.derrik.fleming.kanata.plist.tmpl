@@ -1,0 +1,31 @@
+{{- if eq .chezmoi.os "darwin" -}}
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.derrik.fleming.kanata</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>{{ if eq .chezmoi.arch "arm64" }}/opt/homebrew{{ else }}/usr/local{{ end }}/bin/kanata</string>
+        <string>--cfg</string>
+        <string>{{ .chezmoi.homeDir }}/.config/kanata/config.kbd</string>
+    </array>
+    <key>KeepAlive</key>
+    <true/>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>UserName</key>
+    <string>root</string>
+    <key>StandardOutPath</key>
+    <string>/var/log/kanata.log</string>
+    <key>StandardErrorPath</key>
+    <string>/var/log/kanata.error.log</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>LANG</key>
+        <string>en_US.UTF-8</string>
+    </dict>
+</dict>
+</plist>
+{{- end -}}

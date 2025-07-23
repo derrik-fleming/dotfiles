@@ -1,0 +1,93 @@
+(defsrc
+  esc  f1  f2  f3  f4  f5  f6  f7  f8  f9  f10 f11 f12
+  grv  1   2   3   4   5   6   7   8   9   0   -   =
+  tab  q   w   e   r   t   y   u   i   o   p   [   ]
+  caps a   s   d   f   g   h   j   k   l   ;   '   \
+  lsft z   x   c   v   b   n   m   ,   .   /   rsft
+  lctl lalt lmet      spc          rmet ralt
+)
+
+(defvar
+  ;; Note: consider using different time values for your different fingers.
+  ;; For example, your pinkies might be slower to release keys and index
+  ;; fingers faster.
+  tap-time 0
+  hold-time-dext 225
+  hold-time-non-dext 250
+)
+
+(defalias
+  hyper (multi lsft lctl lalt lmet)
+  a (tap-hold $tap-time $hold-time-non-dext a lctl)
+  r (tap-hold $tap-time $hold-time-non-dext r lalt)
+  s (tap-hold $tap-time $hold-time-dext s lmet)
+  t (tap-hold $tap-time $hold-time-dext t lsft)
+  n (tap-hold $tap-time $hold-time-dext n rsft)
+  e (tap-hold $tap-time $hold-time-dext e rmet)
+  i (tap-hold $tap-time $hold-time-non-dext i ralt)
+  o (tap-hold $tap-time $hold-time-non-dext o rctl)
+  ehyp (tap-hold-release $tap-time $hold-time-dext esc @hyper)
+  shz (tap-hold $tap-time $hold-time-non-dext z lsft)
+
+  cmk (layer-switch colemakdh)
+  qwr (layer-switch qwerty)
+  ll (layer-toggle layer-left)
+  lr (layer-toggle layer-right)
+  lb (layer-toggle layer-both)
+  lay (layer-toggle layers)
+  grl (tap-hold-release $tap-time $hold-time-non-dext grv @lay)
+)
+
+(deflayer colemakdh
+  esc   🔅  🔆 mctl sls dtn dnd ◀◀  ▶⏸  ▶▶  🔇  🔉  🔊
+  @grl  1   2   3   4   5   6   7   8   9   0   -   =
+  tab  q   w   f   p   b   j   l   u   y   ;   [   ]
+  @ehyp @a  @r  @s  @t  g   m   @n  @e  @i  @o   '   \
+  @shz x   c   d   v   z   k   h   ,   .   /   rsft
+  lctl lalt @ll      spc          @lr ralt
+)
+
+(deflayer layers
+  _    🔅  🔆 mctl sls dtn dnd ◀◀  ▶⏸  ▶▶  🔇  🔉  🔊
+  _    @qwr @cmk _  _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _              _              _    _    _
+)
+
+(deflayer qwerty
+  esc   🔅  🔆 mctl sls dtn dnd ◀◀  ▶⏸  ▶▶  🔇  🔉  🔊
+  @grl  1   2   3   4   5   6   7   8   9   0   -   =
+  tab  q   w   e   r   t   y   u   i   o   p   [   ]
+  caps a   s   d   f   g   h   j   k   l   ;   '   \
+  lsft z   x   c   v   b   n   m   ,   .   /   rsft
+  lctl lalt lmet      spc          rmet ralt
+)
+
+(deflayer layer-left
+  esc  🔅  🔆 mctl sls dtn dnd ◀◀  ▶⏸  ▶▶  🔇  🔉  🔊
+  grv  _   _   _   _   _   _   _   _   _   _   _   _
+  S-` S-1 S-2 S-3 S-4 S-5 S-6 S-7 S-8 S-9 S-0   [   ]
+  @ehyp @a  @r  @s  @t  g   h   S--   +   S-[   S-]   '   \
+  lsft _   _   _   _   _   _   _   _   [   ]   rsft
+  lctl lalt @ll      spc          @lb ralt
+)
+
+(deflayer layer-right
+  esc  🔅  🔆 mctl sls dtn dnd ◀◀  ▶⏸  ▶▶  🔇  🔉  🔊
+  grv  _   _   _   _   _   _   _   _   _   _   _   _
+  `    1   2   3   4   5   6   7   8   9   0   [   ]
+  @ehyp @a  @r  @s  @t  _   _   -   =   [   ]   \   \
+  lsft _   _   _   _   _   _   _   _   _   _   rsft
+  lctl lalt @lb      spc         @lr ralt
+)
+
+(deflayer layer-both
+  esc  🔅  🔆 mctl sls dtn dnd ◀◀  ▶⏸  ▶▶  🔇  🔉  🔊
+  grv  _   _   _   _   _   _   _   _   _   _   _   _
+  esc  _   _   _   _   _   _   _   _   _   _   [   ]
+  @ehyp C-1  C-2  C-3  C-4  _   left   down  up  right  _   '   \
+  lsft _   _   _   _   _   _      _     _   _      _   rsft
+  lctl lalt _        spc          _ ralt
+)

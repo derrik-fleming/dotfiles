@@ -1,0 +1,200 @@
+#!/bin/bash
+{{- if eq .chezmoi.os "darwin" }}
+
+# macOS System Defaults Configuration
+# Based on nix-darwin flake settings
+# Robust version with error handling and privilege checks
+
+set -euo pipefail  # Exit on error, undefined vars, pipe failures
+
+# Colors for output
+readonly RED='\033[0;31m'
+readonly GREEN='\033[0;32m'
+readonly YELLOW='\033[1;33m'
+readonly BLUE='\033[0;34m'
+readonly NC='\033[0m' # No Color
+
+# Logging functions
+log_info() { echo -e "${BLUE}[INFO]${NC} $1"; }
+log_success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
+log_warning() { echo -e "${YELLOW}[WARNING]${NC} $1"; }
+log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
+
+# Function to safely write defaults
+safe_defaults_write() {
+    local domain="$1"
+    local key="$2"
+    local type="$3"
+    local value="$4"
+    
+    if defaults write "$domain" "$key" -"$type" "$value" 2>/dev/null; then
+        log_success "Set $domain.$key = $value"
+    else
+        log_warning "Failed to set $domain.$key = $value (continuing...)"
+        return 0  # Don't fail the script
+    fi
+}
+
+# Function to check if application exists
+app_exists() {
+    local app_path="$1"
+    [[ -d "$app_path" ]]
+}
+
+# Function to add app to dock if it exists
+add_to_dock() {
+    local app_path="$1"
+    local app_name=$(basename "$app_path" .app)
+    
+    if app_exists "$app_path"; then
+        defaults write com.apple.dock persistent-apps -array-add \
+            "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>$app_path</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>" 2>/dev/null
+        log_success "Added $app_name to dock"
+    else
+        log_warning "Skipping $app_name - application not found at $app_path"
+    fi
+}
+
+# Function to safely restart a service
+restart_service() {
+    local service="$1"
+    if pgrep -x "$service" > /dev/null 2>&1; then
+        if killall "$service" 2>/dev/null; then
+            log_success "Restarted $service"
+        else
+            log_warning "Failed to restart $service"
+        fi
+    else
+        log_info "$service not running, skipping restart"
+    fi
+}
+
+# Main configuration function
+main() {
+    log_info "Starting macOS system defaults configuration..."
+    
+    # Check if we're on macOS
+    if [[ "$(uname)" != "Darwin" ]]; then
+        log_error "This script is only for macOS"
+        exit 1
+    fi
+    
+    # Check macOS version
+    local macos_version=$(sw_vers -productVersion)
+    log_info "Running on macOS $macos_version"
+    
+    # ============================================================================
+    # DOCK SETTINGS
+    # ============================================================================
+    log_info "Configuring Dock settings..."
+    
+    safe_defaults_write "com.apple.dock" "autohide" "bool" "true"
+    safe_defaults_write "com.apple.dock" "expose-group-by-app" "bool" "true"
+    safe_defaults_write "com.apple.dock" "launchanim" "bool" "false"
+    safe_defaults_write "com.apple.dock" "orientation" "string" "right"
+    
+    # Clear existing persistent apps first
+    if defaults delete com.apple.dock persistent-apps 2>/dev/null; then
+        log_info "Cleared existing dock apps"
+    fi
+    
+    # Add applications to dock (only if they exist)
+    log_info "Adding applications to dock..."
+    declare -a dock_apps=(
+        "/Applications/Zen.app"
+        "/Applications/Ghostty.app"
+        "/Applications/OrbStack.app"
+        "/Applications/1Password 7 - Password Manager.app"
+        "/Applications/1Password.app"
+        "/Applications/Spotify.app"
+        "/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app"
+        "/System/Applications/Utilities/Terminal.app"  # Fallback terminal
+    )
+    
+    for app in "${dock_apps[@]}"; do
+        add_to_dock "$app"
+    done
+    
+    # ============================================================================
+    # FINDER SETTINGS
+    # ============================================================================
+    log_info "Configuring Finder settings..."
+    
+    safe_defaults_write "com.apple.finder" "AppleShowAllFiles" "bool" "true"
+    safe_defaults_write "com.apple.finder" "FXPreferredViewStyle" "string" "clmv"
+    safe_defaults_write "com.apple.finder" "ShowPathbar" "bool" "true"
+    safe_defaults_write "com.apple.finder" "ShowStatusBar" "bool" "true"
+    
+    # ============================================================================
+    # ACCESSIBILITY SETTINGS
+    # ============================================================================
+    log_info "Configuring accessibility settings..."
+    
+    safe_defaults_write "com.apple.universalaccess" "reduceMotion" "bool" "true"
+    safe_defaults_write "com.apple.universalaccess" "reduceTransparency" "bool" "true"
+    
+    # ============================================================================
+    # ADDITIONAL SYSTEM SETTINGS
+    # ============================================================================
+    log_info "Configuring additional system settings..."
+    
+    # Disable the sound when changing volume
+    safe_defaults_write "com.apple.sound.beep" "volume" "float" "0.0"
+    
+    # Show battery percentage in menu bar
+    safe_defaults_write "com.apple.menuextra.battery" "ShowPercent" "string" "YES"
+    
+    # Disable auto-correct
+    safe_defaults_write "NSGlobalDomain" "NSAutomaticSpellingCorrectionEnabled" "bool" "false"
+    
+    # Set fast key repeat
+    safe_defaults_write "NSGlobalDomain" "KeyRepeat" "int" "2"
+    safe_defaults_write "NSGlobalDomain" "InitialKeyRepeat" "int" "15"
+    
+    # ============================================================================
+    # SOFTWARE UPDATE (requires admin privileges)
+    # ============================================================================
+    log_info "Configuring software update settings..."
+    
+    if [[ $EUID -eq 0 ]]; then
+        if defaults write /Library/Preferences/com.apple.SoftwareUpdate AutomaticallyInstallMacOSUpdates -bool true 2>/dev/null; then
+            log_success "Enabled automatic macOS updates"
+        else
+            log_warning "Failed to set automatic macOS updates"
+        fi
+    else
+        log_warning "Skipping system-level software update settings (requires admin privileges)"
+        log_info "To enable automatic updates, run: sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate AutomaticallyInstallMacOSUpdates -bool true"
+    fi
+    
+    # ============================================================================
+    # RESTART SERVICES
+    # ============================================================================
+    log_info "Restarting affected services..."
+    
+    restart_service "Dock"
+    restart_service "Finder"
+    restart_service "SystemUIServer"
+    
+    # ============================================================================
+    # COMPLETION
+    # ============================================================================
+    log_success "macOS defaults configuration completed!"
+    log_info "Some changes may require a logout/login or restart to take full effect."
+    
+    # Show summary of what was configured
+    log_info "Summary of changes:"
+    echo "  • Dock: autohide, right orientation, no launch animation"
+    echo "  • Finder: show hidden files, column view, show path/status bars"
+    echo "  • Accessibility: reduce motion and transparency"
+    echo "  • System: fast key repeat, disable auto-correct, show battery %"
+    echo "  • Dock apps: added available applications"
+}
+
+# Error handling - graceful failures for individual settings
+# Individual setting failures are handled in safe_defaults_write function
+
+# Run main function
+main "$@"
+
+{{- end }}

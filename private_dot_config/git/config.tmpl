@@ -1,0 +1,35 @@
+[alias]
+	cm = "commit"
+	co = "checkout"
+	pu = "push"
+
+[core]
+	editor = "nvim"
+
+[credential "https://gist.github.com"]
+	helper = ""
+	helper = "gh auth git-credential"
+
+[credential "https://github.com"]
+	helper = ""
+	helper = "gh auth git-credential"
+
+[diff]
+	tool = "nvimdiff"
+
+[difftool "nvimdiff"]
+	cmd = "nvim -d $LOCAL $REMOTE -c \"$wincmd w\" -c \"wincmd L\""
+
+
+[init]
+	defaultBranch = "main"
+
+[merge]
+	tool = "nvimdiff"
+
+[mergetool "nvimdiff"]
+	cmd = "nvim -d $LOCAL $MERGED $REMOTE -c \"wincmd l\" -c \"wincmd h\""
+
+[user]
+	email = "{{ .work_email }}"
+	name = "{{ .name }}"

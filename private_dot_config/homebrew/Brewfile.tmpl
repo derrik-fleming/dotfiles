@@ -1,0 +1,101 @@
+{{- if eq .chezmoi.os "darwin" -}}
+# Taps
+tap "homebrew/bundle"
+tap "homebrew/services"
+tap "nikitabobko/tap"  # AeroSpace
+tap "leoafarias/fvm"   # Flutter Version Manager
+tap "dagger/tap"       # Dagger
+
+# Core development tools
+brew "git"
+brew "neovim"
+brew "direnv"
+brew "mise"            # Runtime version manager
+brew "pre-commit"
+
+# Shell and terminal tools
+brew "zsh"
+brew "starship"        # Shell prompt
+brew "atuin"           # Shell history
+brew "zellij"          # Terminal multiplexer
+brew "fzf"             # Fuzzy finder
+brew "zoxide"          # Smart cd
+brew "bat"             # Better cat
+brew "lsd"             # Better ls
+brew "fd"              # Better find
+brew "ripgrep"         # Better grep
+brew "btop"            # Better top
+brew "yazi"            # File manager
+
+# Git tools
+brew "gh"              # GitHub CLI
+brew "lazygit"         # Git TUI
+
+# Development languages and tools
+brew "deno"
+brew "yarn"
+brew "golangci-lint"
+brew "kotlin"
+brew "awscli2"
+
+# Container and deployment tools
+brew "docker"
+brew "lazydocker"
+brew "act"             # GitHub Actions locally
+brew "devpod"
+brew "dagger"          # CI/CD pipelines
+
+# Mobile development
+brew "flutter"
+brew "leoafarias/fvm/fvm"  # Flutter Version Manager
+brew "bundletool"      # Android App Bundle tool
+brew "xcbeautify"      # Xcode build formatter
+
+# API and testing tools
+brew "hurl"            # HTTP testing
+brew "sshpass"
+
+# System utilities
+brew "kanata"          # Keyboard remapper
+brew "mas"             # Mac App Store CLI
+brew "jwt-cli"         # JWT debugging
+brew "xcode-build-server"
+brew "xz"              # Compression
+brew "mkalias"         # Create aliases
+brew "commitizen"      # Conventional commits
+
+# Nix (if using)
+# brew "nix"
+# brew "nixfmt"
+
+# Casks - Applications
+cask "1password"
+cask "1password-cli"
+cask "nikitabobko/tap/aerospace"  # Window manager
+cask "android-commandlinetools"
+cask "android-ndk"
+cask "android-platform-tools"
+cask "android-studio"
+cask "bazecor"                    # Dygma keyboard tool
+cask "ghostty"                    # Terminal
+cask "homerow"                    # Keyboard navigation
+cask "orbstack"                   # Docker alternative
+cask "raycast"                    # Launcher/productivity
+cask "zen"                        # Web browser
+cask "temurin"                    # Java JDK
+cask "tableplus"                  # Database client
+cask "visual-studio-code"
+cask "spotify"
+
+# Fonts
+cask "font-hack-nerd-font"
+cask "font-jetbrains-mono"
+cask "font-monaspace"
+
+# Mac App Store apps
+mas "Xcode", id: 497799835
+
+{{- else -}}
+# Linux package equivalents would go here
+# Most packages available through standard package managers
+{{- end -}}
