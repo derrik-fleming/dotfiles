@@ -80,7 +80,7 @@ eval "$({{ $brew_prefix }}/bin/zoxide init zsh )"
 
 # Android development environment
 export ANDROID_HOME="$HOME/Library/Android/sdk"
-export ANDROID_NDK_HOME="/usr/local/share/android-commandlinetools/ndk-bundle"
+export ANDROID_NDK_HOME="$ANDROID_HOME/ndk"
 
 # PATH additions
 export PATH="$PATH:$HOME/.pub-cache/bin"
