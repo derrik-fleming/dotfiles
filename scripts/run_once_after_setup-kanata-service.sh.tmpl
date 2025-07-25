@@ -151,6 +151,15 @@ install_service() {
         return 1
     fi
     
+    # Create log directory if it doesn't exist
+    if [[ ! -d "/var/log" ]]; then
+        sudo mkdir -p /var/log
+    fi
+    
+    # Create log files with proper permissions
+    sudo touch /var/log/kanata.log /var/log/kanata.error.log
+    sudo chmod 644 /var/log/kanata.log /var/log/kanata.error.log
+    
     # Copy plist to system location (requires sudo)
     if sudo cp "$PLIST_SOURCE" "$PLIST_DEST" 2>/dev/null; then
         log_success "Service plist installed"
@@ -252,7 +261,7 @@ main() {
     else
         # Non-interactive mode - skip setup for now
         log_warning "Running in non-interactive mode - skipping Kanata service setup"
-        log_info "To set up Kanata service later, run: ~/scripts/setup-kanata-service.sh"
+        log_info "To set up Kanata service later, run: ~/scripts/run_once_after_setup-kanata-service.sh"
         exit 0
     fi
     
