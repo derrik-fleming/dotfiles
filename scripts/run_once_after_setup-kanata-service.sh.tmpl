@@ -67,11 +67,9 @@ check_karabiner_status() {
     fi
     log_success "Karabiner Elements found"
     
-    # Check if Karabiner processes are running (they should NOT be for Kanata to work)
+    # Check if Karabiner GUI processes are running (only these conflict with Kanata)
     local karabiner_processes=(
         "Karabiner-Elements"
-        "karabiner_grabber"
-        "karabiner_observer"
         "Karabiner-EventViewer"
     )
     
@@ -83,9 +81,9 @@ check_karabiner_status() {
     done
     
     if [[ ${#running_processes[@]} -gt 0 ]]; then
-        log_error "Karabiner processes are still running: ${running_processes[*]}"
-        log_warning "You must quit ALL Karabiner processes before running Kanata"
-        log_info "To quit: killall Karabiner-Elements karabiner_grabber karabiner_observer"
+        log_error "Karabiner GUI processes are still running: ${running_processes[*]}"
+        log_warning "You must quit the Karabiner GUI applications before running Kanata"
+        log_info "To quit: killall Karabiner-Elements Karabiner-EventViewer"
         return 1
     fi
     

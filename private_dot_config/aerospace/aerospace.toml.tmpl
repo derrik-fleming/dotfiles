@@ -12,6 +12,18 @@ on-focus-changed = []
 on-focused-monitor-changed = ["move-mouse monitor-lazy-center"]
 start-at-login = true
 
+[workspace-to-monitor-force-assignment]
+1 = 2
+2 = 2
+3 = 2
+4 = 2
+5 = 2
+b = 2
+p = 2
+s = 2
+t = 1
+z = 2
+
 [gaps.inner]
 horizontal = 10
 vertical = 10
@@ -89,6 +101,13 @@ check-further-callbacks = false
 run = ["layout tiling"]
 
 [on-window-detected.if]
+app-id = "com.apple.iphonesimulator"
+
+[[on-window-detected]]
+check-further-callbacks = false
+run = ["layout tiling"]
+
+[on-window-detected.if]
 window-title-regex-substring = "CarPlay"
 
 [[on-window-detected]]
@@ -118,6 +137,7 @@ run = ["layout tiling", "move-node-to-workspace p"]
 
 [on-window-detected.if]
 app-id = "com.1password.1password"
+window-title-regex-substring = "—.*1Password"
 
 [[on-window-detected]]
 check-further-callbacks = false

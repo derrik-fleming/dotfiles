@@ -78,6 +78,9 @@ alias -- vim=nvim
 alias -- zj=zellij
 eval "$({{ $brew_prefix }}/bin/zoxide init zsh )"
 
+# XDG configuration
+export XDG_CONFIG_HOME="$HOME/.config"
+
 # Android development environment
 export ANDROID_HOME="/opt/homebrew/share/android-commandlinetools"
 export ANDROID_NDK_HOME="/opt/homebrew/Caskroom/android-ndk"
