@@ -1,0 +1,17 @@
+[tools]
+dart = "latest"
+flutter = "latest"
+go = "1.23"
+kotlin = "latest"
+node = "lts"
+python = "3.13"
+ruby = "3.3.6"
+rust = "latest"
+
+[settings]
+experimental = true
+
+[env]
+LDFLAGS = "-L/opt/homebrew/opt/openssl/lib -L/opt/homebrew/opt/libyaml/lib"
+CPPFLAGS = "-I/opt/homebrew/opt/openssl/include -I/opt/homebrew/opt/libyaml/include"
+PKG_CONFIG_PATH = "/opt/homebrew/opt/openssl/lib/pkgconfig:/opt/homebrew/opt/libyaml/lib/pkgconfig"
