@@ -1,12 +1,9 @@
 return {
   "stevearc/conform.nvim",
-  opts = function()
-    ---@class ConformOpts
-    local opts = {
-      formatters_by_ft = {
+  opts = {
+    formatters_by_ft = {
         sh = { "beautysh" },
         css = { "prettierd" },
-        dart = { "dart_cust" },
         go = { "goimports", "gofumpt" },
         graphql = { "prettierd" },
         handlebars = { "prettierd" },
@@ -42,11 +39,6 @@ return {
         -- shfmt = {
         --   prepend_args = { "-i", "2", "-ci" },
         -- },
-        dart_cust = {
-          command = "dart",
-          args = { "format", "--line-length", "80" },
-          -- stdin = false,
-        },
         php = {
           command = "php-cs-fixer",
           args = {
@@ -56,7 +48,5 @@ return {
           stdin = false,
         },
       },
-    }
-    return opts
-  end,
+    },
 }

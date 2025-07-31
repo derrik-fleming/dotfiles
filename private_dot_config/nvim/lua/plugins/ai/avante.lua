@@ -1,3 +1,5 @@
+return {}
+--[[
 return {
   {
     "yetone/avante.nvim",
@@ -150,3 +152,4 @@ return {
     },
   },
 }
+--]]
