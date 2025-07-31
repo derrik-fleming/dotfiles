@@ -1,6 +1,8 @@
 customCommands:
 - command: 'git commit --message ''{{.Form.Type}}{{ if .Form.Scope }}({{ .Form.Scope
-    }}){{ end }}{{.Form.Breaking}}: {{.Form.Message}}'''
+    }}){{ end }}{{.Form.Breaking}}: {{.Form.Message}}{{ if .Form.Body }}
+
+    {{ .Form.Body }}{{ end }}'''
   context: files
   description: Create a new conventional commit
   key: C
@@ -50,6 +52,10 @@ customCommands:
   - initialValue: ''
     key: Message
     title: Write a short and imperative summary of the code changes
+    type: input
+  - initialValue: ''
+    key: Body
+    title: Provide a longer description of the change (optional)
     type: input
   - key: Breaking
     options:

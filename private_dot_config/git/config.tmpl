@@ -31,8 +31,13 @@
 	cmd = "nvim -d $LOCAL $MERGED $REMOTE -c \"wincmd l\" -c \"wincmd h\""
 
 [user]
-	email = "{{ .work_email }}"
-	name = "{{ .name }}"
+{{- if eq .context "work" }}
+	email = "{{ onepasswordRead "op://Private/work-identity/Internet Details/email" }}"
+	name = "{{ onepasswordRead "op://Private/work-identity/Identification/first name" | lower }}-{{ onepasswordRead "op://Private/work-identity/Identification/last name" | lower }}"
+{{- else }}
+	email = "{{ onepasswordRead "op://Private/personal-identity/Internet Details/email" }}"
+	name = "{{ onepasswordRead "op://Private/personal-identity/Identification/first name" | lower }}-{{ onepasswordRead "op://Private/personal-identity/Identification/last name" | lower }}"
+{{- end }}
 
 {{- if eq .chezmoi.os "darwin" }}
 # Default GPG/SSH signing configuration
