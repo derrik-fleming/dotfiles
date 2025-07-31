@@ -1,34 +1,39 @@
 #!/bin/bash
 
-# Setup Android SDK for Flutter Development
-# This script creates proper Android SDK structure and symlinks
+# Setup Android SDK for Flutter Development using Homebrew packages
+# This script creates proper Android SDK structure using Homebrew-installed components
 
-echo "🤖 Setting up Android SDK for Flutter development..."
+echo "🤖 Setting up Android SDK for Flutter development with Homebrew packages..."
 
-# Set Android SDK location
-ANDROID_HOME="${HOME}/Library/Android/sdk"
+# Use Homebrew Android SDK location
+ANDROID_HOME="/opt/homebrew/share/android-commandlinetools"
 HOMEBREW_PREFIX="/opt/homebrew"
 
-# Create Android SDK directory structure
-echo "📁 Creating Android SDK directory structure..."
+# Ensure the base Android SDK directory exists
+echo "📁 Ensuring Android SDK directory structure..."
 mkdir -p "$ANDROID_HOME"
 
-# Link cmdline-tools from Homebrew (needed to bootstrap SDK installation)
-echo "🔗 Linking cmdline-tools from Homebrew..."
-if [ ! -L "$ANDROID_HOME/cmdline-tools" ]; then
-    ln -sf "$HOMEBREW_PREFIX/share/android-commandlinetools/cmdline-tools" "$ANDROID_HOME/cmdline-tools"
-    echo "✅ Linked cmdline-tools"
+# Link platform-tools from Homebrew Cask
+echo "🔗 Linking platform-tools from Homebrew..."
+if [ ! -L "$ANDROID_HOME/platform-tools" ]; then
+    # Find the actual platform-tools version directory
+    PLATFORM_TOOLS_DIR=$(find "$HOMEBREW_PREFIX/Caskroom/android-platform-tools" -name "platform-tools" -type d | head -1)
+    if [ -n "$PLATFORM_TOOLS_DIR" ]; then
+        ln -sf "$PLATFORM_TOOLS_DIR" "$ANDROID_HOME/platform-tools"
+        echo "✅ Linked platform-tools from Homebrew Cask"
+    else
+        echo "❌ Could not find platform-tools directory"
+        exit 1
+    fi
 fi
 
-# Use SDK manager to install essential packages directly into ANDROID_HOME
+# Use SDK manager to install essential packages for emulator
 echo "📦 Installing essential Android SDK packages..."
 export ANDROID_SDK_ROOT="$ANDROID_HOME"
 "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$ANDROID_HOME" --install \
-    "platform-tools" \
     "build-tools;34.0.0" \
     "platforms;android-34" \
     "emulator" \
-    "system-images;android-34;google_apis;arm64-v8a" \
     "system-images;android-34;google_apis_playstore;arm64-v8a"
 
 # Accept all licenses
@@ -62,10 +67,21 @@ echo "📱 Available AVDs:"
 "$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager" list avd
 
 
+# Configure Flutter to use this Android SDK
+echo "🔧 Configuring Flutter to use Homebrew Android SDK..."
+flutter config --android-sdk "$ANDROID_HOME"
+
 echo "🎉 Android SDK setup complete!"
 echo ""
+echo "💡 Your Android SDK is managed by Homebrew with emulator support:"
+echo "  • Command line tools: android-commandlinetools cask"
+echo "  • Platform tools: android-platform-tools cask"
+echo "  • Emulator and system images: installed via sdkmanager"
+echo ""
 echo "💡 Quick commands:"
+echo "  • Check Flutter: flutter doctor"
 echo "  • List AVDs: $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager list avd"
 echo "  • Start AVD: $ANDROID_HOME/emulator/emulator -avd $AVD_NAME"
 echo "  • Flutter devices: flutter devices"
 echo "  • Flutter emulators: flutter emulators"
+echo "  • Update Homebrew tools: brew upgrade --cask android-commandlinetools android-platform-tools"
