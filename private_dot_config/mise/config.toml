@@ -15,3 +15,4 @@ experimental = true
 LDFLAGS = "-L/opt/homebrew/opt/openssl/lib -L/opt/homebrew/opt/libyaml/lib"
 CPPFLAGS = "-I/opt/homebrew/opt/openssl/include -I/opt/homebrew/opt/libyaml/include"
 PKG_CONFIG_PATH = "/opt/homebrew/opt/openssl/lib/pkgconfig:/opt/homebrew/opt/libyaml/lib/pkgconfig"
+MISE_NODE_DEFAULT_PACKAGES_FILE = "~/.config/mise/nodejs"
