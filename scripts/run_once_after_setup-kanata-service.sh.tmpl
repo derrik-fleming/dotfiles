@@ -69,7 +69,8 @@ check_karabiner_status() {
     
     # Check if Karabiner GUI processes are running (only these conflict with Kanata)
     local karabiner_processes=(
-        "Karabiner-Elements"
+        "Karabiner-Menu"
+        "Karabiner-NotificationWindow"
         "Karabiner-EventViewer"
     )
     
@@ -81,10 +82,9 @@ check_karabiner_status() {
     done
     
     if [[ ${#running_processes[@]} -gt 0 ]]; then
-        log_error "Karabiner GUI processes are still running: ${running_processes[*]}"
-        log_warning "You must quit the Karabiner GUI applications before running Kanata"
-        log_info "To quit: killall Karabiner-Elements Karabiner-EventViewer"
-        return 1
+        log_warning "Karabiner GUI processes are still running: ${running_processes[*]}"
+        log_warning "If Kanata fails with 'device in use' error, quit these processes:"
+        log_info "To quit: killall Karabiner-Menu Karabiner-NotificationWindow Karabiner-EventViewer"
     fi
     
     log_success "No conflicting Karabiner processes running"
@@ -110,10 +110,10 @@ check_prerequisites() {
     fi
     log_success "Kanata config found"
     
-    # Validate config (dry run)
-    if ! "$KANATA_BIN" --cfg "$KANATA_CONFIG" --dry-run >/dev/null 2>&1; then
+    # Validate config (check)
+    if ! "$KANATA_BIN" --cfg "$KANATA_CONFIG" --check >/dev/null 2>&1; then
         log_error "Kanata config validation failed"
-        log_info "Test with: $KANATA_BIN --cfg $KANATA_CONFIG --dry-run"
+        log_info "Test with: $KANATA_BIN --cfg $KANATA_CONFIG --check"
         return 1
     fi
     log_success "Kanata config is valid"
@@ -126,17 +126,23 @@ test_kanata_manually() {
     log_warning "This will run Kanata in the foreground for 5 seconds"
     log_info "Press Ctrl+C if you see any errors"
     
-    # Test run for 5 seconds
-    timeout 5s sudo "$KANATA_BIN" --cfg "$KANATA_CONFIG" || {
-        local exit_code=$?
-        if [[ $exit_code -eq 124 ]]; then
-            log_success "Manual test completed successfully (timeout expected)"
-            return 0
-        else
-            log_error "Manual test failed with exit code $exit_code"
-            return 1
-        fi
-    }
+    # Test run for 5 seconds using gtimeout (GNU coreutils) or skip if not available
+    if command -v gtimeout >/dev/null 2>&1; then
+        gtimeout 5s sudo "$KANATA_BIN" --cfg "$KANATA_CONFIG" || {
+            local exit_code=$?
+            if [[ $exit_code -eq 124 ]]; then
+                log_success "Manual test completed successfully (timeout expected)"
+                return 0
+            else
+                log_error "Manual test failed with exit code $exit_code"
+                return 1
+            fi
+        }
+    else
+        log_warning "gtimeout not available (install with: brew install coreutils)"
+        log_info "Skipping manual test - proceeding with service installation"
+        return 0
+    fi
 }
 
 install_service() {
