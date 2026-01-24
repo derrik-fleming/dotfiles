@@ -1,0 +1,20 @@
+# Bob (Neovim Version Manager) Configuration
+# https://github.com/MordechaiHadad/bob
+
+# Show information about new nightly commits
+enable_nightly_info = true
+
+# Use release builds for better performance (no debug info)
+enable_release_build = true
+
+# Track neovim version in a file for config synchronization
+version_sync_file_location = "~/.config/nvim/nvim.version"
+
+# Automatically add bob's neovim proxy to PATH
+add_neovim_binary_to_path = true
+
+# Number of nightly rollbacks to keep
+rollback_limit = 5
+
+# Don't block operations when neovim is running
+ignore_running_instances = false

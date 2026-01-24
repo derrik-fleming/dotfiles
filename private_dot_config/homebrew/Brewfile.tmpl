@@ -2,12 +2,11 @@
 # Taps
 # homebrew/bundle and homebrew/services are deprecated and no longer needed
 tap "nikitabobko/tap"  # AeroSpace
-tap "leoafarias/fvm"   # Flutter Version Manager
 tap "dagger/tap"       # Dagger
 
 # Core development tools
 brew "git"
-brew "neovim"
+brew "bob"              # Neovim version manager
 brew "direnv"
 brew "mise"            # Runtime version manager
 brew "pre-commit"
@@ -34,8 +33,12 @@ brew "lazygit"         # Git TUI
 brew "deno"
 brew "yarn"
 brew "golangci-lint"
+brew "swiftlint"
+brew "swiftformat"
 brew "kotlin"
 brew "awscli"
+brew "ollama"
+brew "sst/tap/opencode"
 
 # Container and deployment tools
 brew "docker"
@@ -44,7 +47,6 @@ brew "act"             # GitHub Actions locally
 brew "dagger"          # CI/CD pipelines
 
 # Mobile development
-brew "leoafarias/fvm/fvm"  # Flutter Version Manager
 brew "bundletool"      # Android App Bundle tool
 brew "xcbeautify"      # Xcode build formatter
 brew "cocoapods"       # iOS dependency manager
@@ -66,6 +68,7 @@ brew "jq"              # JSON processor
 brew "httpie"          # Better curl
 brew "tree"            # Directory tree
 brew "watch"           # Command monitoring
+brew "librsvg"         # SVG rendering library
 
 # Nix (if using)
 # brew "nix"
@@ -86,7 +89,9 @@ cask "homerow"                    # Keyboard navigation
 cask "orbstack"                   # Docker alternative
 cask "raycast"                    # Launcher/productivity
 cask "zen"                        # Web browser
-cask "temurin"                    # Java JDK
+cask "brave-browser"              # Privacy-focused browser
+cask "vysor"                     # Android screen mirroring
+cask "vscodium"
 # cask "tableplus"                  # Database client
 # cask "visual-studio-code"
 # cask "spotify"

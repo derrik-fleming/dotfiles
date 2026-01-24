@@ -1,6 +1,8 @@
 pane_frames false
 show_startup_tips false
 theme "rose-pine-moon"
+copy_command "pbcopy"
+scrollback_editor "/Users/derrik.fleming/.local/share/bob/nvim-bin/nvim"
 
 themes {
   rose-pine-moon {
@@ -21,4 +23,14 @@ themes {
 load_plugins {
     zellij:session-manager
     https://github.com/dj95/zjstatus/releases/latest/download/zjstatus.wasm
+}
+
+keybinds {
+    tab {
+        bind "e" {
+            NewTab {
+                layout "{{ .chezmoi.homeDir }}/.config/zellij/layouts/editor.kdl"
+            }
+        }
+    }
 }

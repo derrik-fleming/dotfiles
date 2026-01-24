@@ -1,7 +1,7 @@
 # Azure DevOps-specific configuration
 {{- if eq .chezmoi.os "darwin" }}
 [user]
-	signingkey = {{ onepasswordRead "op://Private/id_rsa/public key" }}
+	signingkey = {{ onepasswordRead "op://Work/id_rsa/public key" }}
 
 [commit]
 	gpgsign = false

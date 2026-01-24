@@ -1,7 +1,10 @@
+[tool_alias]
+flutter = "asdf:https://github.com/nyuyuyu/asdf-flutter.git"
+
 [tools]
-dart = "latest"
 flutter = "latest"
 go = "1.23"
+java = "temurin-21"
 kotlin = "latest"
 node = "lts"
 python = "3.13"
@@ -10,6 +13,15 @@ rust = "latest"
 
 [settings]
 experimental = true
+idiomatic_version_file_enable_tools = [
+  "flutter",
+  "go",
+  "java",
+  "node",
+  "python",
+  "ruby",
+  "rust",
+]
 
 [env]
 LDFLAGS = "-L/opt/homebrew/opt/openssl/lib -L/opt/homebrew/opt/libyaml/lib"

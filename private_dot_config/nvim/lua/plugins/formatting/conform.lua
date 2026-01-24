@@ -2,29 +2,7 @@ return {
   "stevearc/conform.nvim",
   opts = {
     formatters_by_ft = {
-        sh = { "beautysh" },
-        css = { "prettierd" },
-        go = { "goimports", "gofumpt" },
-        graphql = { "prettierd" },
-        handlebars = { "prettierd" },
-        html = { "prettierd" },
-        javascript = { "eslint_d" },
-        javascriptreact = { "eslint_d" },
-        json = { "prettierd" },
-        jsonc = { "prettierd" },
-        kotlin = { "ktlint" },
-        less = { "prettierd" },
-        lua = { "stylua" },
-        markdown = { "prettierd" },
-        php = { "php" },
-        python = { "black" },
-        scss = { "prettierd" },
-        sql = { "sql_formatter", "sqlfluff" },
-        typescript = { "eslint_d" },
-        typescriptreact = { "eslint_d" },
-        vue = { "prettierd" },
-        xml = { "xmlformat" },
-        yaml = { "prettierd" },
+        -- kotlin = { "ktlint" }, -- disabled in favor of LazyVim extra
       },
       formatters = {
         injected = { options = { ignore_errors = true } },
@@ -39,14 +17,6 @@ return {
         -- shfmt = {
         --   prepend_args = { "-i", "2", "-ci" },
         -- },
-        php = {
-          command = "php-cs-fixer",
-          args = {
-            "fix",
-            "$FILENAME",
-          },
-          stdin = false,
-        },
       },
     },
 }
