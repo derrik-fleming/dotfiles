@@ -4,10 +4,10 @@ Personal dotfiles managed with [chezmoi](https://chezmoi.io) for cross-platform 
 
 ## Features
 
-- **Cross-platform**: Works on macOS (Intel/Apple Silicon) and Linux
-- **Platform-aware templates**: Conditional configs for Darwin-specific tools
-- **Work/Personal separation**: Template-based git configuration
-- **Secret management**: 1Password integration for sensitive data
+- **Cross-platform**: Works on macOS (Intel/Apple Silicon), Arch Linux, and Debian
+- **Platform-aware templates**: Darwin-only scripts and settings are excluded on Linux
+- **Machine-local identity data**: Git identity and signing-key paths live in chezmoi data
+- **Portable shell startup**: optional tools and Homebrew are discovered at runtime
 - **Modern shell setup**: zsh with starship, atuin, and productivity tools
 
 ## Quick Start
@@ -40,14 +40,46 @@ Edit `~/.config/chezmoi/chezmoi.toml` to customize:
 
 ```toml
 [data]
-    name = "your-name"
-    work_email = "you@company.com"
-    personal_email = "you@gmail.com"
-    email_type = "work"  # or "personal"
-
-[onepassword]
-    prompt = false
+    # Set these per machine; do not put an identity or key in the repository.
+    name = "Your Name"
+    email = "you@example.com"
+    context = "work" # or "personal"
+    # workstation enables 1Password-backed configuration; server does not.
+    profile = "workstation"
+    # Optional path used for GitHub SSH commit signing.
+    githubSigningKey = "~/.ssh/id_ed25519.pub"
 ```
+
+### Trusted Workstations and Remote Hosts
+
+`profile` is a security boundary, not just a convenience setting:
+
+- Use `profile = "workstation"` only on a trusted, interactive Mac or Linux desktop. It enables 1Password-backed configuration and the local Kagi MCP wrapper.
+- Use `profile = "server"` on EC2, VPS, CI, containers, and other remote hosts. This is the Linux default. It excludes 1Password configuration and Kagi, and does not require `op` or a vault session.
+- macOS defaults to `workstation`; set the profile explicitly on trusted Linux desktops.
+
+For a trusted macOS workstation, install the 1Password CLI explicitly:
+
+```bash
+./bootstrap.sh --with-1password
+```
+
+For an EC2 or other remote host, use the regular bootstrap and set the profile before applying:
+
+```toml
+# ~/.config/chezmoi/chezmoi.toml
+[data]
+profile = "server"
+```
+
+The managed SSH configuration sets `ForwardAgent no`, so a local 1Password SSH
+agent is used to connect *to* a remote host but is never exposed *on* it. If a
+server needs its own credentials, use a separate deploy key, cloud identity, or
+a server-side secret manager—not your personal 1Password vault.
+
+When adding a template that reads an `op://` secret, guard it with the
+`workstation` profile and exclude any generated secret-backed command on server
+profiles.
 
 ## Managed Files
 
@@ -60,8 +92,26 @@ Edit `~/.config/chezmoi/chezmoi.toml` to customize:
 - **Tools**: atuin (shell history), lazygit, gh (GitHub CLI)
 
 ### Platform-Specific
-- **macOS**: AeroSpace window manager (Darwin-only)
-- **Linux**: (Conditional configs as needed)
+- **macOS**: AeroSpace window manager and Homebrew bundle (Darwin-only)
+- **Arch Linux**: native `pacman` package bootstrap; Homebrew is never installed
+- **Debian**: native `apt` package bootstrap; Homebrew is never installed
+
+### Package Inventory
+
+Homebrew package lists are data-driven, following the same pattern as the example
+repository:
+
+- `.chezmoidata/common.toml` contains command-line tools shared with future platform installers.
+- `.chezmoidata/darwin.toml` contains macOS taps, formulae, casks, fonts, and App Store apps.
+- `.chezmoidata/arch.toml` contains Arch-specific pacman and optional AUR packages.
+- `.chezmoidata/debian.toml` contains Debian apt packages and packages that need an upstream source.
+- `private_dot_config/homebrew/Brewfile.tmpl` only sorts, de-duplicates, and renders Homebrew data.
+
+Edit the data files, then preview the generated bundle with:
+
+```bash
+chezmoi execute-template < ~/.local/share/chezmoi/private_dot_config/homebrew/Brewfile.tmpl
+```
 
 ## Usage
 
@@ -95,11 +145,13 @@ chezmoi apply
 
 ### Work vs Personal Machine
 
-Switch git configuration by editing `~/.config/chezmoi/chezmoi.toml`:
+Set the machine's Git identity by editing `~/.config/chezmoi/chezmoi.toml`:
 
 ```toml
 [data]
-    email_type = "work"    # or "personal"
+    name = "Your Name"
+    email = "you@company.com"
+    context = "work"
 ```
 
 Then apply changes:

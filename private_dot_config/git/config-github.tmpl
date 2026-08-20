@@ -1,5 +1,6 @@
-# GitHub-specific signing configuration
-{{- if eq .chezmoi.os "darwin" }}
+# GitHub-specific signing configuration. Set githubSigningKey in chezmoi data
+# (for example, ~/.ssh/id_ed25519.pub) when SSH commit signing is desired.
+{{- with (dig "githubSigningKey" "" .) }}
 [user]
-	signingkey = {{ onepasswordRead "op://Work/id_ed25519/public key" }}
+	signingkey = {{ . | quote }}
 {{- end }}

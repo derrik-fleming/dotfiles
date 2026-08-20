@@ -1,11 +1,13 @@
-# 1Password SSH Agent integration
-{{- if eq .chezmoi.os "darwin" }}
+# 1Password SSH Agent integration: trusted macOS workstations only.
+{{- if and (eq (dig "profile" "server" .) "workstation") (eq .chezmoi.os "darwin") }}
 Host *
     IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
 {{- end }}
 
 # Default settings for all hosts
 Host *
+    # Never expose a workstation's agent to EC2 or other remote hosts.
+    ForwardAgent no
     AddKeysToAgent yes
 {{- if eq .chezmoi.os "darwin" }}
     UseKeychain yes

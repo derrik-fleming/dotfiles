@@ -1,0 +1,19 @@
+{{- $common := .packages.common.debian | sortAlpha | uniq -}}
+{{- $packages := concat $common .packages.debian.apt | sortAlpha | uniq -}}
+#!/usr/bin/env bash
+# Install the Debian package set declared in .chezmoidata/{common,debian}.toml.
+set -euo pipefail
+
+if [[ "$(uname -s)" != Linux ]] || ! command -v apt-get >/dev/null 2>&1; then
+  printf 'This script requires a Debian system with apt-get.\n' >&2
+  exit 1
+fi
+
+sudo apt-get update
+sudo apt-get install --yes {{ $packages | join " " }}
+
+cat <<'EOF_OPTIONAL'
+Optional packages are declared in .chezmoidata/debian.toml. Install them from
+the appropriate upstream repository or release-specific package source after
+reviewing the versions available for this Debian release.
+EOF_OPTIONAL

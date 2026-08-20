@@ -25,13 +25,40 @@ return {
 		"neovim/nvim-lspconfig",
 		opts = {
 			servers = {
-				sourcekit = {
-					root_dir = function(filename, _)
-						local util = require("lspconfig.util")
-						return util.root_pattern("*.xcodeproj", "*.xcworkspace")(filename)
-							or util.root_pattern("Package.swift")(filename)
-					end,
-				},
+			sourcekit = {
+				mason = false, -- sourcekit-lsp comes from Xcode, not mason; forces vim.lsp.enable()
+				filetypes = { "swift", "objective-c", "objective-cpp" },
+				-- Neovim nightly calls root_dir(bufnr, on_dir) — the result must be passed
+				-- to the on_dir callback, not returned. Returning synchronously is silently ignored.
+				root_dir = function(bufnr, on_dir)
+					local filename = vim.api.nvim_buf_get_name(bufnr)
+					local util = require("lspconfig.util")
+
+					-- Standard Swift/Xcode project detection (traverses up from file)
+					local xcode_root = util.root_pattern("*.xcodeproj", "*.xcworkspace")(filename)
+						or util.root_pattern("Package.swift")(filename)
+					if xcode_root then
+						on_dir(xcode_root)
+						return
+					end
+
+					-- Flutter iOS fallback: pubspec.yaml marks the Flutter project root;
+					-- sourcekit needs the ios/ subdirectory where the xcodeproj lives.
+					local flutter_root = util.root_pattern("pubspec.yaml")(filename)
+					if flutter_root then
+						local ios_dir = flutter_root .. "/ios"
+						if
+							vim.fn.isdirectory(ios_dir .. "/Runner.xcworkspace") == 1
+							or vim.fn.isdirectory(ios_dir .. "/Runner.xcodeproj") == 1
+						then
+							on_dir(ios_dir)
+							return
+						end
+					end
+
+					on_dir(nil)
+				end,
+			},
 			},
 		},
 	},

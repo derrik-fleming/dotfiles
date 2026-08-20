@@ -1,0 +1,42 @@
+{
+  "lspServers": {
+    "dart": {
+      "command": "dart",
+      "args": ["language-server", "--protocol=lsp"],
+      "fileExtensions": {
+        ".dart": "dart"
+      },
+      "initializationOptions": {
+        "onlyAnalyzeProjectsWithOpenFiles": true
+      }
+    },
+    "lua_ls": {
+      "command": "lua-language-server",
+      "fileExtensions": {
+        ".lua": "lua"
+      }
+    },
+    "sourcekit": {
+      "command": "sourcekit-lsp",
+      "fileExtensions": {
+        ".swift": "swift"
+      }
+    },
+    "phpactor": {
+      "command": "phpactor",
+      "args": ["language-server"],
+      "fileExtensions": {
+        ".php": "php"
+      }
+    },
+    "harper_ls": {
+      "command": "harper-ls",
+      "args": ["--stdio"],
+      "fileExtensions": {
+        ".md": "markdown",
+        ".txt": "plaintext",
+        ".tex": "latex"
+      }
+    }
+  }
+}

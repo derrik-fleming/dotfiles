@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# This wrapper is deployed only to workstation profiles. Do not add the Kagi
+# secret to a server; use a server-side secret manager if a remote host needs it.
+set -euo pipefail
+
+if ! command -v op >/dev/null 2>&1; then
+  printf 'Kagi MCP requires the 1Password CLI on a trusted workstation.\n' >&2
+  exit 1
+fi
+
+export KAGI_API_KEY="$(op read "op://Shared/Kagi/key")"
+exec uvx kagimcp

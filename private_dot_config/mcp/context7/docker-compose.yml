@@ -1,0 +1,19 @@
+services:
+  context:
+    build: .
+    container_name: context7-mcp
+    ports:
+      - "8081:8080"
+    volumes:
+      # Persist additional context packages across container restarts
+      - context-packages:/root/.context/packages
+    environment:
+      - NODE_ENV=production
+      - CONTEXT_PORT=8080
+      - CONTEXT_HOST=0.0.0.0
+      - CONTEXT7_API_KEY
+    restart: unless-stopped
+
+volumes:
+  context-packages:
+    driver: local

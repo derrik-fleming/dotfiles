@@ -1,0 +1,51 @@
+{
+  "listen": ":8080",
+  "enable_tray": false,
+  "api_key": "",
+  "mcpServers": [
+    {
+      "name": "dart",
+      "protocol": "stdio",
+      "command": "dart",
+      "args": ["mcp-server"],
+      "enabled": true
+    },
+    {
+      "name": "git",
+      "protocol": "stdio",
+      "command": "uvx",
+      "args": ["mcp-server-git"],
+      "enabled": true
+    },
+    {
+      "name": "context7",
+      "protocol": "http",
+      "url": "https://mcp.context7.com/mcp",
+      "enabled": true
+    },
+    {
+      "name": "kagi",
+      "protocol": "stdio",
+      "command": "/Users/derrik.fleming/.config/mcp/kagi/kagi-search-mcp",
+      "args": [],
+      "enabled": true
+    },
+    {
+      "name": "cavemem",
+      "protocol": "stdio",
+      "command": "/Users/derrik.fleming/.local/share/mise/installs/node/latest/bin/cavemem",
+      "args": [
+        "/Users/derrik.fleming/repos/cavemem/apps/cli/dist/index.js",
+        "mcp"
+      ],
+      "enabled": true
+    },
+    {
+      "name": "svelte",
+      "protocol": "stdio",
+      "command": "npx",
+      "args": ["-y", "@sveltejs/mcp"],
+      "enabled": true
+    }
+  ]
+}

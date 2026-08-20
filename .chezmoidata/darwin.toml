@@ -1,0 +1,58 @@
+[packages.darwin]
+taps = [
+  "dagger/tap",
+  "nikitabobko/tap",
+]
+
+formula = [
+  "awscli",
+  "bundletool",
+  "cocoapods",
+  "dagger",
+  "docker",
+  "golangci-lint",
+  "jwt-cli",
+  "kanata",
+  "kotlin",
+  "librsvg",
+  "mas",
+  "oven-sh/bun/bun",
+  "smart-mcp-proxy/mcpproxy/mcpproxy",
+  "sshpass",
+  "sst/tap/opencode",
+  "swiftformat",
+  "swiftlint",
+  "xcode-build-server",
+  "xcbeautify",
+  "yarn",
+]
+
+casks = [
+  "1password",
+  "1password-cli",
+  "android-commandlinetools",
+  "android-ndk",
+  "android-platform-tools",
+  "android-studio",
+  "bazecor",
+  "brave-browser",
+  "ghostty",
+  "git-credential-manager",
+  "homerow",
+  "keepassxc",
+  "nikitabobko/tap/aerospace",
+  "orbstack",
+  "raycast",
+  "vscodium",
+  "vysor",
+  "zen",
+]
+
+fonts = [
+  "font-hack-nerd-font",
+  "font-jetbrains-mono",
+  "font-monaspace",
+]
+
+[packages.darwin.mas]
+Xcode = 497799835

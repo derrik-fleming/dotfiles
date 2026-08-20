@@ -1,0 +1,35 @@
+[tool_alias]
+flutter = "asdf:https://github.com/nyuyuyu/asdf-flutter.git"
+
+[tools]
+flutter = "latest"
+go = "latest"
+java = "temurin-21"
+kotlin = "latest"
+node = "lts"
+ollama = "latest"
+python = "latest"
+ruby = "latest"
+rust = "latest"
+uv = "latest"
+
+[settings]
+experimental = true
+idiomatic_version_file_enable_tools = [
+  "flutter",
+  "go",
+  "java",
+  "node",
+  "python",
+  "ruby",
+  "rust",
+]
+
+[env]
+MISE_NODE_DEFAULT_PACKAGES_FILE = "{{ .chezmoi.homeDir }}/.config/mise/nodejs"
+{{- if eq .chezmoi.os "darwin" }}
+# These headers are needed only for the Homebrew Ruby build on macOS.
+LDFLAGS = "-L{{ if eq .chezmoi.arch "arm64" }}/opt/homebrew{{ else }}/usr/local{{ end }}/opt/openssl/lib -L{{ if eq .chezmoi.arch "arm64" }}/opt/homebrew{{ else }}/usr/local{{ end }}/opt/libyaml/lib"
+CPPFLAGS = "-I{{ if eq .chezmoi.arch "arm64" }}/opt/homebrew{{ else }}/usr/local{{ end }}/opt/openssl/include -I{{ if eq .chezmoi.arch "arm64" }}/opt/homebrew{{ else }}/usr/local{{ end }}/opt/libyaml/include"
+PKG_CONFIG_PATH = "{{ if eq .chezmoi.arch "arm64" }}/opt/homebrew{{ else }}/usr/local{{ end }}/opt/openssl/lib/pkgconfig:{{ if eq .chezmoi.arch "arm64" }}/opt/homebrew{{ else }}/usr/local{{ end }}/opt/libyaml/lib/pkgconfig"
+{{- end }}

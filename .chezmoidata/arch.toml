@@ -1,0 +1,25 @@
+# Arch-specific packages. The install script combines these with
+# packages.common.arch and installs only official-repository packages.
+[packages.arch]
+pacman = [
+  "base-devel",
+  "curl",
+  "docker",
+  "docker-compose",
+  "go",
+  "nodejs",
+  "npm",
+  "python",
+  "python-pip",
+  "rustup",
+  "unzip",
+  "wget",
+]
+
+# Optional AUR packages are intentionally not installed automatically. Install
+# them with your preferred AUR helper after reviewing each package.
+aur = [
+  "bob-bin",
+  "lazydocker-bin",
+  "opencode-bin",
+]

@@ -1,0 +1,153 @@
+#!/bin/bash
+
+# Install Xcode Additional Tools - iOS and CarPlay Focus
+# This script installs the latest iOS platform and CarPlay simulator components
+
+echo "🔧 Installing Xcode additional tools (iOS + CarPlay)..."
+
+# Check if Xcode is installed
+if ! command -v xcodebuild &> /dev/null; then
+    echo "❌ Xcode not found. Please install Xcode first."
+    exit 1
+fi
+
+# Accept Xcode license if not already accepted
+echo "📋 Accepting Xcode license..."
+sudo xcodebuild -license accept 2>/dev/null || true
+
+# Run first launch to initialize Xcode components
+echo "🚀 Running Xcode first launch initialization..."
+xcodebuild -runFirstLaunch
+
+# Install command line tools if not present
+echo "🛠️  Ensuring command line tools are installed..."
+xcode-select --install 2>/dev/null || echo "Command line tools already installed"
+
+# Install latest iOS platform specifically
+echo "📱 Installing latest iOS platform..."
+if xcodebuild -downloadPlatform iOS; then
+    echo "✅ iOS platform download completed"
+else
+    echo "⚠️  iOS platform download may have failed or was already complete"
+fi
+
+# Install dedicated CarPlay Simulator app via Additional Tools for Xcode
+echo "🚗 Installing dedicated CarPlay Simulator app..."
+# Check if CarPlay Simulator app is already installed
+if [ -d "/Applications/CarPlay Simulator.app" ]; then
+    echo "✅ CarPlay Simulator app already installed"
+else
+    echo "📥 Downloading Additional Tools for Xcode..."
+    
+    # Get the current Xcode version to determine the right Additional Tools version
+    XCODE_VERSION=$(xcodebuild -version | head -n1 | sed 's/Xcode //')
+    XCODE_MAJOR=$(echo $XCODE_VERSION | cut -d. -f1)
+    
+    # Determine the Additional Tools URL based on Xcode version
+    if [ "$XCODE_MAJOR" -ge "16" ]; then
+        # For Xcode 16+, use the latest Additional Tools
+        ADDITIONAL_TOOLS_URL="https://download.developer.apple.com/Developer_Tools/Additional_Tools_for_Xcode_16/Additional_Tools_for_Xcode_16.dmg"
+    else
+        # Fallback for older Xcode versions
+        ADDITIONAL_TOOLS_URL="https://download.developer.apple.com/Developer_Tools/Additional_Tools_for_Xcode_15/Additional_Tools_for_Xcode_15.dmg"
+    fi
+    
+    # Create temporary directory for download
+    TEMP_DIR=$(mktemp -d)
+    DMG_PATH="$TEMP_DIR/AdditionalTools.dmg"
+    
+    echo "🌐 Downloading from Apple Developer portal..."
+    if curl -L -o "$DMG_PATH" "$ADDITIONAL_TOOLS_URL" 2>/dev/null; then
+        echo "✅ Additional Tools DMG downloaded"
+        
+        # Mount the DMG
+        echo "💿 Mounting Additional Tools DMG..."
+        MOUNT_POINT=$(hdiutil attach "$DMG_PATH" -nobrowse | grep "/Volumes" | cut -d$'\t' -f3)
+        
+        if [ -n "$MOUNT_POINT" ]; then
+            echo "✅ DMG mounted at: $MOUNT_POINT"
+            
+            # Look for CarPlay Simulator in the mounted volume
+            if [ -d "$MOUNT_POINT/CarPlay Simulator.app" ]; then
+                echo "🚗 Installing CarPlay Simulator..."
+                cp -R "$MOUNT_POINT/CarPlay Simulator.app" /Applications/
+                echo "✅ CarPlay Simulator installed to /Applications/"
+            else
+                echo "🔍 Looking for CarPlay Simulator in DMG contents..."
+                ls -la "$MOUNT_POINT/" || true
+            fi
+            
+            # Unmount the DMG
+            hdiutil detach "$MOUNT_POINT" >/dev/null 2>&1 || true
+        else
+            echo "❌ Failed to mount Additional Tools DMG"
+        fi
+    else
+        echo "❌ Failed to download Additional Tools for Xcode"
+        echo "💡 Manual installation required:"
+        echo "   1. Visit https://developer.apple.com/download/all/"
+        echo "   2. Search for 'Additional Tools for Xcode'"
+        echo "   3. Download the version matching your Xcode installation"
+        echo "   4. Install the package - includes CarPlay Simulator"
+    fi
+    
+    # Clean up temporary files
+    rm -rf "$TEMP_DIR" 2>/dev/null || true
+    
+    # Final check
+    if [ -d "/Applications/CarPlay Simulator.app" ]; then
+        echo "✅ CarPlay Simulator app installation completed"
+    else
+        echo "⚠️  CarPlay Simulator installation may have failed"
+    fi
+fi
+
+# List installed platforms for verification
+echo "✅ Installed Xcode platforms:"
+ls -la /Applications/Xcode.app/Contents/Developer/Platforms/ 2>/dev/null || echo "Could not list platforms directory"
+
+# List available SDKs
+echo "🎯 Available SDKs:"
+xcodebuild -showsdks
+
+# Check for dedicated CarPlay Simulator app
+echo "🚗 Checking dedicated CarPlay Simulator app:"
+if [ -d "/Applications/CarPlay Simulator.app" ]; then
+    echo "✅ CarPlay Simulator app found at /Applications/CarPlay Simulator.app"
+    echo "📱 CarPlay Simulator version:"
+    defaults read "/Applications/CarPlay Simulator.app/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null || echo "Version info not available"
+else
+    echo "❌ Dedicated CarPlay Simulator app not found"
+fi
+
+# List available iOS simulators
+echo "📱 Available iOS simulators:"
+xcrun simctl list devices | grep -E "iPhone|iPad" | head -10
+
+# Show CarPlay-specific information
+echo "🚗 CarPlay development options:"
+echo "  • Dedicated CarPlay Simulator app (standalone)"  
+echo "  • CarPlay integration in iOS Simulator (Device > External Displays > CarPlay)"
+echo "  • Use both for comprehensive CarPlay app testing"
+
+echo "🎉 Xcode additional tools installation complete!"
+echo ""
+echo "💡 What was installed:"
+echo "  • Latest iOS platform and SDK"
+echo "  • CarPlay Simulator via Additional Tools for Xcode"
+echo "  • Command line developer tools"
+echo ""
+echo "💡 Quick verification commands:"
+echo "  • Show iOS SDK: xcodebuild -showsdks | grep iOS"
+echo "  • List simulators: xcrun simctl list devices"
+echo "  • Check CarPlay app: ls -la '/Applications/CarPlay Simulator.app'"
+echo "  • Xcode version: xcodebuild -version"
+echo ""
+echo "💡 Using CarPlay simulators:"
+echo "  • Launch dedicated CarPlay Simulator from Applications folder"
+echo "  • Or use iOS Simulator: Device > External Displays > CarPlay"
+echo "  • Dedicated CarPlay Simulator provides advanced CarPlay testing features"
+echo ""
+echo "💡 If CarPlay Simulator isn't installed automatically:"
+echo "  • Download 'Additional Tools for Xcode' from https://developer.apple.com/download/all/"
+echo "  • Or install via Xcode > Settings > Components"

@@ -1,0 +1,16 @@
+{{- $context := dig "context" "personal" . -}}
+{{- $name := dig "name" (env "USER") . -}}
+{{- $email := dig "email" (env "GIT_EMAIL") . -}}
+{{- $defaultProfile := "server" -}}
+{{- if eq .chezmoi.os "darwin" }}{{ $defaultProfile = "workstation" }}{{ end -}}
+{{- $profile := dig "profile" $defaultProfile . -}}
+sourceDir = {{ .chezmoi.sourceDir | quote }}
+
+[data]
+# Override these in ~/.config/chezmoi/chezmoi.toml for a work machine.
+context = {{ $context | quote }}
+name = {{ $name | quote }}
+email = {{ $email | quote }}
+# Use workstation only on a trusted interactive machine. Linux defaults to
+# server; explicitly opt trusted Linux desktops into workstation.
+profile = {{ $profile | quote }}

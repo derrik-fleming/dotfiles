@@ -1,0 +1,56 @@
+{
+  "settings": {
+    "toolPrefix": "server",
+    "hostConfigDiscovery": "off",
+    "scriptMode": true,
+    "outputGuard": true
+  },
+  "mcpServers": {
+    "dart": {
+      "command": "dart",
+      "args": ["mcp-server"]
+    },
+    "git": {
+      "command": "uvx",
+      "args": ["mcp-server-git"]
+    },
+    "context7": {
+      "url": "https://mcp.context7.com/mcp"
+    },
+{{- if eq (dig "profile" "server" .) "workstation" }}
+    "kagi": {
+      "command": "{{ .chezmoi.homeDir }}/.config/mcp/kagi/kagi-search-mcp",
+      "args": []
+    },
+{{- end }}
+    "cavemem": {
+      "command": "{{ .chezmoi.homeDir }}/.local/share/mise/installs/node/24.11.1/bin/node",
+      "args": [
+        "{{ .chezmoi.homeDir }}/repos/cavemem/apps/cli/dist/index.js",
+        "mcp"
+      ]
+    },
+    "svelte": {
+      "command": "npx",
+      "args": ["-y", "@sveltejs/mcp"]
+    },
+    "headroom": {
+      "command": "{{ .chezmoi.homeDir }}/repos/headroom/.venv/bin/headroom",
+      "args": ["mcp", "serve"]
+    },
+    "serena": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/oraios/serena",
+        "serena",
+        "start-mcp-server",
+        "--project-from-cwd",
+        "--context",
+        "agent",
+        "--open-web-dashboard",
+        "False"
+      ]
+    }
+  }
+}

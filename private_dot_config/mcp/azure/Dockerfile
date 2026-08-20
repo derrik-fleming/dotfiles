@@ -10,7 +10,7 @@ RUN npm install -g @azure-devops/mcp@next
 
 # Set environment variable for Azure DevOps organization
 # This MUST be overridden at runtime
-ENV ADO_ORG=""
+ENV ADO_ORG="gentex"
 
 # Health check (optional - checks if node is responsive)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \

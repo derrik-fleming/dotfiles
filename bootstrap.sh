@@ -1,95 +1,68 @@
-#!/bin/bash
-
-# Bootstrap script for chezmoi setup
-# This script installs the prerequisites needed for chezmoi apply to succeed
-
+#!/usr/bin/env bash
+# Install the minimum prerequisites for chezmoi on macOS or Linux.
 set -euo pipefail
 
-log_info() {
-    echo "[INFO] $1" >&2
-}
-
-log_warning() {
-    echo "[WARNING] $1" >&2
-}
-
-log_error() {
-    echo "[ERROR] $1" >&2
-}
-
-check_macos() {
-    if [[ "$OSTYPE" != "darwin"* ]]; then
-        log_error "This script is designed for macOS only"
-        exit 1
-    fi
-}
+log() { printf '[%s] %s\n' "$1" "$2" >&2; }
 
 install_homebrew() {
-    if command -v brew >/dev/null 2>&1; then
-        log_info "Homebrew is already installed"
-        return 0
-    fi
-    
-    log_info "Installing Homebrew..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    
-    # Add brew to PATH for this session
-    if [[ "$(uname -m)" == "arm64" ]]; then
-        export PATH="/opt/homebrew/bin:$PATH"
-    else
-        export PATH="/usr/local/bin:$PATH"
-    fi
-    
-    if command -v brew >/dev/null 2>&1; then
-        log_info "Homebrew installed successfully"
-    else
-        log_error "Homebrew installation failed"
-        exit 1
-    fi
+  if [[ "$(uname -s)" != Darwin ]]; then
+    log ERROR 'Homebrew bootstrap is macOS-only; Linux hosts use their native package manager.'
+    exit 1
+  fi
+  if command -v brew >/dev/null 2>&1; then
+    return
+  fi
+  log INFO 'Installing Homebrew...'
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  if [[ -x /opt/homebrew/bin/brew ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  else
+    eval "$(/usr/local/bin/brew shellenv)"
+  fi
 }
 
 install_chezmoi() {
-    if command -v chezmoi >/dev/null 2>&1; then
-        log_info "chezmoi is already installed"
-        return 0
-    fi
-    
-    log_info "Installing chezmoi..."
-    if brew install chezmoi; then
-        log_info "chezmoi installed successfully"
-    else
-        log_error "chezmoi installation failed"
-        exit 1
-    fi
+  if command -v chezmoi >/dev/null 2>&1; then
+    log INFO "chezmoi is already installed ($(chezmoi --version | head -1))"
+    return
+  fi
+
+  case "$(uname -s)" in
+    Darwin)
+      install_homebrew
+      brew install chezmoi
+      ;;
+    Linux)
+      mkdir -p "$HOME/.local/bin"
+      sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin"
+      export PATH="$HOME/.local/bin:$PATH"
+      ;;
+    *)
+      log ERROR "Unsupported operating system: $(uname -s)"
+      exit 1
+      ;;
+  esac
 }
 
 install_1password_cli() {
-    if command -v op >/dev/null 2>&1; then
-        log_info "1Password CLI is already installed"
-        return 0
-    fi
-    
-    log_info "Installing 1Password CLI..."
-    if brew install --cask 1password-cli; then
-        log_info "1Password CLI installed successfully"
-        log_info "You may need to authenticate with 'op signin' before using chezmoi"
-    else
-        log_error "1Password CLI installation failed"
-        exit 1
-    fi
+  command -v op >/dev/null 2>&1 && return
+  [[ "$(uname -s)" == Darwin ]] || {
+    log ERROR 'Automatic 1Password CLI installation is supported only on macOS.'
+    exit 1
+  }
+  install_homebrew
+  brew install --cask 1password-cli
 }
 
-main() {
-    log_info "Starting chezmoi prerequisites installation..."
-    
-    check_macos
-    install_homebrew
-    install_chezmoi
-    install_1password_cli
-    
-    log_info "All prerequisites installed successfully!"
-    log_info "You can now run: chezmoi init --apply https://github.com/yourusername/dotfiles.git"
-    log_info "Note: You may need to authenticate with 1Password CLI first: op signin"
-}
+with_1password=false
+if [[ "${1:-}" == "--with-1password" ]]; then
+  with_1password=true
+elif [[ $# -ne 0 ]]; then
+  log ERROR "Unknown option: $1"
+  exit 2
+fi
 
-main "$@"
+install_chezmoi
+$with_1password && install_1password_cli
+log INFO 'Prerequisites are ready. Initialize with: chezmoi init --apply git@github.com:derrik-fleming/dotfiles.git'
+log INFO 'Trusted macOS workstation only: rerun bootstrap.sh --with-1password to install the 1Password CLI.'

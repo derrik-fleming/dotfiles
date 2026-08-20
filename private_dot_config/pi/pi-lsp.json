@@ -1,0 +1,44 @@
+{
+  "servers": {
+    "dart": {
+      "command": [
+        "dart",
+        "language-server",
+        "--protocol=lsp"
+      ],
+      "extensions": [
+        ".dart"
+      ],
+      "initialization": {
+        "onlyAnalyzeProjectsWithOpenFiles": true
+      }
+    },
+    "lua_ls": {
+      "command": [
+        "lua-language-server"
+      ],
+      "extensions": [
+        ".lua"
+      ]
+    },
+    "sourcekit": {
+      "command": [
+        "sourcekit-lsp"
+      ],
+      "extensions": [
+        ".swift"
+      ]
+    },
+    "harper_ls": {
+      "command": [
+        "harper-ls",
+        "--stdio"
+      ],
+      "extensions": [
+        ".md",
+        ".txt",
+        ".tex"
+      ]
+    }
+  }
+}

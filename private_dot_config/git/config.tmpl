@@ -24,16 +24,15 @@
 	cmd = "nvim -d $LOCAL $MERGED $REMOTE -c \"wincmd l\" -c \"wincmd h\""
 
 [user]
-{{- if eq .context "work" }}
-	email = "{{ onepasswordRead "op://Work/work-identity/Internet Details/email" }}"
-	name = "{{ onepasswordRead "op://Work/work-identity/Identification/first name" | lower }}-{{ onepasswordRead "op://Work/work-identity/Identification/last name" | lower }}"
-{{- else }}
-	email = "{{ onepasswordRead "op://Personal/personal-identity/Internet Details/email" }}"
-	name = "{{ onepasswordRead "op://Personal/personal-identity/Identification/first name" | lower }}-{{ onepasswordRead "op://Personal/personal-identity/Identification/last name" | lower }}"
+# Identity is machine data, not a secret lookup: this lets chezmoi render before
+# 1Password is installed or signed in. Set name/email in chezmoi.toml.
+name = {{ dig "name" (env "USER") . | quote }}
+{{- with (dig "email" "" .) }}
+email = {{ . | quote }}
 {{- end }}
 
-{{- if eq .chezmoi.os "darwin" }}
-# Default GPG/SSH signing configuration
+{{- if and (eq (dig "profile" "server" .) "workstation") (eq .chezmoi.os "darwin") }}
+# Default GPG/SSH signing configuration for a trusted macOS workstation
 [gpg]
 	format = ssh
 

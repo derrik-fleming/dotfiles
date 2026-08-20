@@ -1,0 +1,231 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "autoupdate": false,
+  "autoshare": false,
+  "share": "disabled",
+  "enabled_providers": [ "github-copilot", "ollama", "amazon-bedrock", "headroom" ],
+  "experimental": {
+    "openTelemetry": false
+  },
+  "agent": {
+    "general": {
+      "disable": true
+    },
+    "explore": {
+      "disable": true
+    },
+    "scout": {
+      "disable": true
+    },
+    "compaction": { "model": "ollama/qwen3.5:9b-mlx-fast" },
+    "title":      { "model": "ollama/qwen3.5:9b-mlx-fast" },
+    "summary":    { "model": "ollama/qwen3.5:9b-mlx-fast" },
+  },
+  "permission": {
+    "edit": "ask",
+    "bash": "ask",
+    "webfetch": "ask"
+  },
+  "provider": {
+    "headroom": {
+      "name": "Headroom Proxy",
+      "options": {
+        "baseURL": "http://127.0.0.1:8787/v1"
+      },
+      "models": {
+        "claude-haiku-4.5": {
+          "name": "Claude Haiku 4.5",
+        },
+        "claude-opus-4.8": {
+          "name": "Claude Opus 4.8",
+        },
+        "claude-opus-4.8-fast": {
+          "name": "Claude Opus 4.8 (fast)",
+        },
+        "claude-sonnet-5": {
+          "name": "Claude Sonnet 5",
+        },
+        "gemini-2.5-pro": {
+          "name": "Gemini 2.5 Pro",
+        },
+        "gemini-3-flash-preview": {
+          "name": "Gemini 3 Flash (preview)",
+        },
+        "gemini-3.1-pro-preview": {
+          "name": "Gemini 3.1 Pro (preview)",
+        },
+        "gemini-3.5-flash": {
+          "name": "Gemini 3.5 Flash",
+        },
+        "gpt-5-mini": {
+          "name": "GPT-5 mini",
+        },
+        "gpt-5.3-codex": {
+          "name": "GPT-5.3 Codex",
+        },
+        "gpt-5.4": {
+          "name": "GPT-5.4",
+        },
+        "gpt-5.4-mini": {
+          "name": "GPT-5.4 mini",
+        },
+        "gpt-5.5": {
+          "name": "GPT-5.5",
+        },
+        "mai-code-1-flash-picker": {
+          "name": "MAI Code 1 Flash (picker)",
+        },
+        "gpt-5.6-luna": {
+          "name": "GPT-5.6 luna"
+        },
+        "gpt-5.6-sol": {
+          "name": "GPT-5.6 sol"
+        },
+        "gpt-5.6-terra": {
+          "name": "GPT-5.6 terra"
+        }
+      }
+    },
+    "amazon-bedrock": {
+      "options": {
+          "profile": "gentex-bedrock",
+          "region": "us-east-1"
+      }
+    },
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama (local)",
+      "options": {
+        "baseURL": "http://localhost:11434/v1"
+      },
+      "models": {
+        "qwen3-coder:30b": {
+          "name": "Qwen3 Coder 30B",
+        },
+        "ornith:9b": {
+          "id": "ornith:9b",
+          "name": "Ornith 9b",
+          "tool_call": true
+        },
+        "ornith:35b": {
+          "id": "ornith:35b",
+          "name": "Ornith 35b",
+          "tool_call": true
+        },
+        "qwen3.5:9b-mlx": {
+          "id": "qwen3.5:9b-mlx",
+          "name": "Qwen3.5 9B MLX",
+          "tool_call": true
+        },
+        "qwen3.5:9b-mlx-fast": {
+          "id": "qwen3.5:9b-mlx",
+          "name": "Qwen3.5 9B MLX (no think)",
+          "tool_call": true,
+          "options": { "reasoningEffort": "none" }
+        }
+      }
+    }
+  },
+  "mcp": {
+    "proxy": {
+      "type": "remote",
+      "url": "http://localhost:8080/mcp",
+      "enabled": true
+    },
+    "headroom": {
+      "type": "local",
+      "command": [
+        "/Users/derrik.fleming/repos/headroom/.venv/bin/headroom",
+        "mcp",
+        "serve"
+      ],
+      "enabled": true
+    },
+    "serena": {
+      "type": "local",
+      "command": [
+        "uvx",
+        "--from",
+        "git+https://github.com/oraios/serena",
+        "serena",
+        "start-mcp-server",
+        "--project-from-cwd",
+        "--context",
+        "agent",
+        "--open-web-dashboard",
+        "False"
+      ],
+      "enabled": true
+    }
+  },
+  "formatter": {
+    "javascript": {
+      "command": [
+        "prettier",
+        "--write",
+        "{file}"
+      ]
+    },
+    "typescript": {
+      "command": [
+        "prettier",
+        "--write",
+        "{file}"
+      ]
+    },
+    "go": {
+      "command": [
+        "gofmt",
+        "-w",
+        "{file}"
+      ]
+    }
+  },
+  "lsp": {
+    "dart": {
+      "command": [
+        "dart",
+        "language-server",
+        "--protocol=lsp"
+      ],
+      "extensions": [
+        ".dart"
+      ],
+      "initialization": {
+        "onlyAnalyzeProjectsWithOpenFiles": true
+      }
+    },
+    "lua_ls": {
+      "command": [
+        "lua-language-server"
+      ],
+      "extensions": [
+        ".lua"
+      ]
+    },
+    "sourcekit": {
+      "command": [
+        "sourcekit-lsp"
+      ],
+      "extensions": [
+        ".swift"
+      ]
+    },
+    "harper_ls": {
+      "command": [
+        "harper-ls",
+        "--stdio"
+      ],
+      "extensions": [
+        ".md",
+        ".txt",
+        ".tex"
+      ]
+    }
+  },
+  "plugin": [
+    "@dietrichgebert/ponytail",
+    "file://./plugins/cavemem.js",
+    "file://./plugins/rtk.ts",
+  ]
+}

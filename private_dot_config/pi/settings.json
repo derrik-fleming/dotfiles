@@ -1,0 +1,18 @@
+{
+  "lastChangelogVersion": "0.84.1",
+  "theme": "rose-pine",
+  "packages": [
+    "npm:@narumitw/pi-lsp",
+    "npm:pi-mcp-adapter",
+    "npm:@gotgenes/pi-permission-system",
+    "npm:@zenobius/pi-rose-pine",
+    "npm:pi-zentui",
+    "npm:@narumitw/pi-plan-mode",
+    "npm:@firstpick/pi-extension-tools",
+    "npm:pi-subagents",
+    "npm:@juicesharp/rpiv-todo",
+    "../../.config/pi/extensions/pi-skill-toggle"
+  ],
+  "defaultProvider": "headroom",
+  "defaultModel": "gpt-5.6-luna"
+}

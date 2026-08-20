@@ -1,107 +1,89 @@
+# Keep this file usable on macOS, Linux, and machines without Homebrew.
 typeset -U path cdpath fpath manpath
 
-# oh-my-zsh configuration
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 export ZSH="$HOME/.oh-my-zsh"
+
+path=(
+  "$HOME/.local/bin"
+  "$HOME/.pub-cache/bin"
+  "$XDG_DATA_HOME/bob/nvim-bin"
+  "$XDG_DATA_HOME/nvim/mason/bin"
+  "$HOME/fvm/default/bin"
+  $path
+)
+
+# Homebrew chooses its own prefix on Apple Silicon, Intel macOS, and Linux.
+if (( $+commands[brew] )); then
+  eval "$(brew shellenv)"
+fi
+
 plugins=(1password aws brew docker flutter gh git gitignore node yarn)
-
-# Performance optimization: Load completion system only once
-autoload -Uz compinit && compinit -C
-
-# Source oh-my-zsh if installed
-if [[ -f "$ZSH/oh-my-zsh.sh" ]]; then
-    source "$ZSH/oh-my-zsh.sh"
+if [[ -r "$ZSH/oh-my-zsh.sh" ]]; then
+  autoload -Uz compinit && compinit -C
+  source "$ZSH/oh-my-zsh.sh"
 fi
 
-# History options should be set in .zshrc and after oh-my-zsh sourcing.
-# See https://github.com/nix-community/home-manager/issues/177.
-HISTSIZE="10000"
-SAVEHIST="10000"
-
+HISTSIZE=10000
+SAVEHIST=10000
 HISTFILE="$HOME/.zsh_history"
-mkdir -p "$(dirname "$HISTFILE")"
-
-setopt HIST_FCNTL_LOCK
-unsetopt APPEND_HISTORY
-setopt HIST_IGNORE_DUPS
-unsetopt HIST_IGNORE_ALL_DUPS
-unsetopt HIST_SAVE_NO_DUPS
-unsetopt HIST_FIND_NO_DUPS
-setopt HIST_IGNORE_SPACE
-unsetopt HIST_EXPIRE_DUPS_FIRST
-setopt SHARE_HISTORY
-unsetopt EXTENDED_HISTORY
-
-
-{{- $brew_prefix := "/opt/homebrew" -}}
-{{- if eq .chezmoi.arch "amd64" -}}
-{{- $brew_prefix = "/usr/local" -}}
-{{- end }}
-
-if [[ $options[zle] = on ]]; then
-  source <({{ $brew_prefix }}/bin/fzf --zsh)
-fi
+setopt HIST_FCNTL_LOCK HIST_IGNORE_DUPS HIST_IGNORE_SPACE SHARE_HISTORY
+unsetopt APPEND_HISTORY HIST_IGNORE_ALL_DUPS HIST_SAVE_NO_DUPS HIST_FIND_NO_DUPS EXTENDED_HISTORY
 
 function yy() {
-  local tmp="$(mktemp -t "yazi-cwd.XXXXX")"
+  local tmp cwd
+  tmp="$(mktemp -t yazi-cwd.XXXXXX)" || return
   yazi "$@" --cwd-file="$tmp"
-  if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+  if cwd="$(<"$tmp")" && [[ -n "$cwd" && "$cwd" != "$PWD" ]]; then
     builtin cd -- "$cwd"
   fi
   rm -f -- "$tmp"
 }
 
-if [[ $TERM != "dumb" ]]; then
-  eval "$({{ $brew_prefix }}/bin/starship init zsh)"
+(( $+commands[fzf] && $+options[zle] )) && source <(fzf --zsh)
+[[ "$TERM" != dumb && $+commands[starship] -eq 1 ]] && eval "$(starship init zsh)"
+(( $+commands[mise] )) && eval "$(mise activate zsh)"
+(( $+commands[direnv] )) && eval "$(direnv hook zsh)"
+(( $+commands[atuin] && $+options[zle] )) && eval "$(atuin init zsh)"
+(( $+commands[zoxide] )) && eval "$(zoxide init zsh)"
+
+if [[ -n "${GHOSTTY_RESOURCES_DIR:-}" && -r "$GHOSTTY_RESOURCES_DIR/shell-integration/zsh/ghostty-integration" ]]; then
+  source "$GHOSTTY_RESOURCES_DIR/shell-integration/zsh/ghostty-integration"
 fi
 
-eval "$({{ $brew_prefix }}/bin/mise activate zsh)"
+(( $+commands[bat] )) && alias cat=bat
+(( $+commands[zoxide] )) && alias cd=z
+(( $+commands[lsd] )) && {
+  alias la='lsd -A' ll='lsd -l' lla='lsd -lA' llt='lsd -l --tree' ls=lsd lt='lsd --tree'
+}
+alias d='fvm dart' f='fvm flutter' j=just ld=lazydocker vim=nvim zj=zellij
 
-if [[ -n $GHOSTTY_RESOURCES_DIR ]]; then
-  source "$GHOSTTY_RESOURCES_DIR"/shell-integration/zsh/ghostty-integration
-fi
-
-eval "$({{ $brew_prefix }}/bin/direnv hook zsh)"
-
-if [[ $options[zle] = on ]]; then
-  eval "$({{ $brew_prefix }}/bin/atuin init zsh )"
-fi
-
-alias -- cat=bat
-alias -- cd=z
-alias -- d='fvm dart'
-alias -- j=just
-alias -- f='fvm flutter'
-alias -- la='{{ $brew_prefix }}/bin/lsd -A'
-alias -- ld=lazydocker
-alias -- ll='{{ $brew_prefix }}/bin/lsd -l'
-alias -- lla='{{ $brew_prefix }}/bin/lsd -lA'
-alias -- llt='{{ $brew_prefix }}/bin/lsd -l --tree'
-alias -- ls={{ $brew_prefix }}/bin/lsd
-alias -- lt='{{ $brew_prefix }}/bin/lsd --tree'
-alias -- vim=nvim
-alias -- zj=zellij
-eval "$({{ $brew_prefix }}/bin/zoxide init zsh )"
-
-# XDG configuration
-export XDG_CONFIG_HOME="$HOME/.config"
-
+{{- if eq (dig "profile" "server" .) "workstation" }}
 {{- if eq .chezmoi.os "darwin" }}
-# 1Password SSH Agent
-export SSH_AUTH_SOCK=~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock
+# 1Password's SSH agent is enabled only on trusted macOS workstations.
+export SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+{{- end }}
 {{- end }}
 
-# Android development environment
-export ANDROID_HOME="/opt/homebrew/share/android-commandlinetools"
-export ANDROID_NDK_HOME="/opt/homebrew/Caskroom/android-ndk"
-export ANDROID_AVD_HOME="$HOME/.config/.android/avd"
+{{- if and (eq (dig "profile" "server" .) "workstation") (eq .chezmoi.os "darwin") }}
+# These Ollama settings are for a trusted macOS workstation.
+export OLLAMA_HOST=127.0.0.1:11434
+export OLLAMA_KEEP_ALIVE=3600
+export OLLAMA_NUM_PARALLEL=2
+export OLLAMA_MAX_LOADED_MODELS=2
+export OLLAMA_NUM_GPU=999
+export OLLAMA_FLASH_ATTENTION=1
+export OLLAMA_KV_CACHE_TYPE=q8_0
+export OLLAMA_MAX_QUEUE=512
+export OLLAMA_CONTEXT_LENGTH=32768
+export MCPPROXY_DATA_DIR="$XDG_CONFIG_HOME/mcpproxy"
+{{- end }}
 
-# PATH additions
-export PATH="$PATH:$HOME/.pub-cache/bin"
-export PATH="$PATH:$HOME/.local/share/bob/nvim-bin"
-export PATH="$PATH:$HOME/.local/share/nvim/mason/bin"
-export PATH="$PATH:$HOME/.local/bin"
-export PATH="$PATH:$HOME/fvm/default/bin"
-export PATH="$PATH:$ANDROID_HOME/emulator"
-export PATH="$PATH:$ANDROID_HOME/tools"
-export PATH="$PATH:$ANDROID_HOME/tools/bin"
-export PATH="$PATH:$ANDROID_HOME/platform-tools"
+export ANDROID_AVD_HOME="$XDG_CONFIG_HOME/.android/avd"
+export OMO_SEND_ANONYMOUS_TELEMETRY=0
+export OMO_DISABLE_POSTHOG=1
+export OPENAI_BASE_URL=http://127.0.0.1:8787/v1
+export LITELLM_LOCAL_MODEL_COST_MAP=true
+export TF_BUILD=true

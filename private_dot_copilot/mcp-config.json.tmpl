@@ -1,0 +1,29 @@
+{
+  "mcpServers": {
+    "context7": {
+      "url": "https://mcp.context7.com/mcp"
+    },
+{{- if eq (dig "profile" "server" .) "workstation" }}
+    "kagi": {
+      "command": "{{ .chezmoi.homeDir }}/.config/mcp/kagi/kagi-search-mcp",
+      "args": []
+    },
+{{- end }}
+    "dart": {
+      "command": "dart",
+      "args": ["mcp-server"]
+    },
+    "git": {
+      "command": "uvx",
+      "args": ["mcp-server-git"]
+    },
+    "cavemem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "cavemem",
+        "mcp"
+      ]
+    }
+  }
+}

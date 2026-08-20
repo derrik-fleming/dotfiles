@@ -1,0 +1,17 @@
+{{- $common := .packages.common.arch | sortAlpha | uniq -}}
+{{- $packages := concat $common .packages.arch.pacman | sortAlpha | uniq -}}
+#!/usr/bin/env bash
+# Install the Arch Linux package set declared in .chezmoidata/{common,arch}.toml.
+set -euo pipefail
+
+if [[ "$(uname -s)" != Linux ]] || ! command -v pacman >/dev/null 2>&1; then
+  printf 'This script requires an Arch Linux system with pacman.\n' >&2
+  exit 1
+fi
+
+sudo pacman -Syu --needed --noconfirm {{ $packages | join " " }}
+
+cat <<'EOF_AUR'
+Optional AUR packages are declared in .chezmoidata/arch.toml. They are not
+installed automatically; review and install them with your preferred AUR helper.
+EOF_AUR

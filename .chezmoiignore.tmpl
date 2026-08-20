@@ -1,0 +1,31 @@
+# Source-state and operating-system-specific files should never be applied to
+# an unsupported host. Keep shared terminal/editor configuration portable.
+{{- $profile := dig "profile" "server" . -}}
+**/.DS_Store
+
+{{- if ne $profile "workstation" }}
+# Do not put secrets or local hardware/background services on hosts that are
+# not explicitly trusted workstations.
+.config/1Password/**
+.config/mcp/kagi/**
+Library/LaunchAgents/com.ollama.ollama.plist
+Library/LaunchDaemons/com.derrik.fleming.kanata.plist
+.chezmoiscripts/darwin/run_once_after_setup-kanata-service.sh.tmpl
+{{- end }}
+
+{{- if ne .chezmoi.os "darwin" }}
+.config/1Password
+.config/aerospace
+.config/homebrew
+Library/**
+.chezmoiscripts/darwin/**
+{{- end }}
+
+{{- /* This setup currently supports Arch only on Linux. */ -}}
+{{- $distro := dig "id" "" .chezmoi.osRelease -}}
+{{- if ne $distro "arch" }}
+.chezmoiscripts/arch/**
+{{- end }}
+{{- if ne $distro "debian" }}
+.chezmoiscripts/debian/**
+{{- end }}
